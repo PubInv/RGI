@@ -4,8 +4,8 @@
 
 // TODO:
 // 1) Add Licence premable
-// 1.5) Make all components empty boxes instead of solid cubes
-// 2) Cut the female dovetial
+// 1.5) Make all components empty boxes instead of solid cubes - Jahanavi
+// 2) Cut the female dovetial -- 
 // 3) Add parameterizes margins (0.5 mm)
 // 4) Make it two dovetails instead of 1
 // 5) Add an empty "chamber" for the cables
@@ -20,6 +20,7 @@
 depth_mm = 50;
 width_mm = 140;
 RENDER = 1;
+dovetial_margin_mm = 0.5;
 
 module dovetail() {
     y = 10;
@@ -40,8 +41,20 @@ module generic_component(height_mm) {
     color("yellow");
     translate([0,0,height_mm])
     dovetail();
+    
+    // TODO: Cut away interior
+    
+    // Add a femaile dovetail
 }
 
+module speaker_component() {
+    difference() {
+        generic_component(50);
+        translate([0,0,25])
+        rotate([90,0,0])
+        cylinder(100,10,10,center=true);
+    }
+}
 
 
 module top_end_plate() {
@@ -58,9 +71,15 @@ module blank_face_plate() {
 if (RENDER) {
     color("blue")
     generic_component(50);
+    
+    
     translate([0,0,50])
     color("green")
     generic_component(30);
+    
+    translate([150,0,0])
+    color("red")
+    speaker_component();
 }
 
 dovetail();
