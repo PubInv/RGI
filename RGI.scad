@@ -21,6 +21,7 @@ depth_mm = 50;
 width_mm = 140;
 RENDER = 1;
 dovetial_margin_mm = 0.5;
+knife_margin_mm = 0.01;
 
 module dovetail() {
     y = 10;
@@ -82,8 +83,6 @@ if (RENDER) {
     speaker_component();
 }
 
-dovetail();
-
 module female_dovetail() {
 
     y = 10 + dovetial_margin_mm;
@@ -91,10 +90,10 @@ module female_dovetail() {
     z = 5 + dovetial_margin_mm;
 
     points = [
-        [0, y_in],
+        [0-knife_margin_mm, y_in],
         [z, y],
         [z,-y],
-        [0,-y_in]
+        [0-knife_margin_mm,-y_in]
     ];
 
     rotate([0,-90,0])
