@@ -25,13 +25,15 @@ knife_margin_mm = 0.01;
 wall_mm = 2;
 
 dt_height = 8; // Height is difference from flat top to base.
+dt_width = 10;
+dt_narrow_width = 4;
 
 
 USE_RENDER_KNIFE = 1;
 
-module dovetail(dt_h = dt_height) {
-    y = 10;
-    y_in = 7;
+module dovetail(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_width) {
+    y = dt_w;
+    y_in = dt_n_w;
     z = dt_h;
     points = [[0,y_in],[z,y],[z,-y],[0,-y_in]];
     rotate([0,-90,0])
@@ -40,11 +42,11 @@ module dovetail(dt_h = dt_height) {
 }
 
 
-module female_dovetail_knife(dt_h = dt_height) {
+module female_dovetail_knife(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_width) {
 
-    y = 10 + dovetial_margin_mm;
-    y_in = 7 + dovetial_margin_mm;
-    z = dt_height + dovetial_margin_mm;
+    y = dt_w + dovetial_margin_mm;
+    y_in = dt_n_w + dovetial_margin_mm;
+    z = dt_h + dovetial_margin_mm;
 
     points = [
         [0-knife_margin_mm, y_in],
@@ -58,10 +60,10 @@ module female_dovetail_knife(dt_h = dt_height) {
             polygon(points);
 }
 
-module dove_tail_shell(dt_h = dt_height) {
-    y = 10 + wall_mm;
-    y_in = 7 + wall_mm;
-    z = dt_height + wall_mm;
+module dove_tail_shell(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_width) {
+    y = dt_w + wall_mm;
+    y_in = dt_n_w + wall_mm;
+    z = dt_h + wall_mm;
 
     points = [
        [0, y_in],
@@ -75,13 +77,11 @@ module dove_tail_shell(dt_h = dt_height) {
         linear_extrude(height = width_mm, center = true)
         polygon(points);
         rotate([0,90,0])
-        female_dovetail_knife(dt_h);
+        female_dovetail_knife(dt_h,dt_w,dt_n_w);
     }
 }
 
-color("green")
-translate([0,40,0])
-dove_tail_shell(dt_height);
+
 
 module speaker_component() {
     difference() {
@@ -118,14 +118,14 @@ module generic_component (height_mm) {
         ])
         cube([width_mm - 2*wall_mm,depth_mm - 2*wall_mm, height_mm - 2*wall_mm]);
         // Female dovetail socket
-        female_dovetail_knife();
+        female_dovetail_knife(dt_height,dt_width,dt_narrow_width);
     }
     
     dove_tail_shell(dt_height);
 
     // Male dovetail on top
     translate([0,0,height_mm])
-        dovetail(dt_height);
+        dove_tail_shell(dt_height+1,dt_width+1,dt_narrow_width+1);
 }
 
 
@@ -143,6 +143,10 @@ module render() {
         translate([150,0,0])
         color("red")
         speaker_component();
+        
+        color("green")
+        translate([0,40,0])
+        dove_tail_shell(dt_height+3);
     }
 }
 
