@@ -22,6 +22,7 @@ width_mm = 140;
 RENDER = 1;
 dovetial_margin_mm = 0.5;
 knife_margin_mm = 0.01;
+wall_mm = 2;
 
 module dovetail() {
     y = 10;
@@ -33,20 +34,67 @@ module dovetail() {
     polygon(points);
 }
 
-// This will have a male top and female bottom dovetail
-// componets facial geometry is centered iin x and y, but 
-// bottom is at origin in z
-module generic_component(height_mm) {
-    translate([-width_mm/2,-depth_mm/2,0])
-    cube([width_mm,depth_mm, height_mm]);
-    color("yellow");
-    translate([0,0,height_mm])
-    dovetail();
-    
-    // TODO: Cut away interior
-    
-    // Add a femaile dovetail
+
+module female_dovetail_knife() {
+
+    y = 10 + dovetial_margin_mm;
+    y_in = 7 + dovetial_margin_mm;
+    z = 5 + dovetial_margin_mm;
+
+    points = [
+        [0-knife_margin_mm, y_in],
+        [z, y],
+        [z,-y],
+        [0-knife_margin_mm,-y_in]
+    ];
+
+    rotate([0,-90,0])
+        linear_extrude(height = width_mm + 2, center = true)
+            polygon(points);
 }
+
+module dove_tail_shell() {
+
+    y = 10 + wall_mm;
+    y_in = 7 + wall_mm;
+    z = 5 + wall_mm;
+
+    points = [
+       [0, y_in],
+       [z, y],
+       [z,-y],
+       [0,-y_in]
+    ];
+    
+    rotate([0,-90,0])
+    difference() {
+        linear_extrude(height = width_mm, center = true)
+        polygon(points);
+        #rotate([0,90,0])
+        female_dovetail_knife();
+    }
+
+
+}
+
+color("green")
+translate([0,40,0])
+dove_tail_shell();
+//
+//// This will have a male top and female bottom dovetail
+//// componets facial geometry is centered iin x and y, but 
+//// bottom is at origin in z
+//module generic_component(height_mm) {
+//    translate([-width_mm/2,-depth_mm/2,0])
+//    cube([width_mm,depth_mm, height_mm]);
+//    color("yellow");
+//    translate([0,0,height_mm])
+//    dovetail();
+//    
+//    // TODO: Cut away interior
+//    
+//    // Add a femaile dovetail
+//}
 
 module speaker_component() {
     difference() {
@@ -83,35 +131,24 @@ if (RENDER) {
     speaker_component();
 }
 
-module female_dovetail() {
-
-    y = 10 + dovetial_margin_mm;
-    y_in = 7 + dovetial_margin_mm;
-    z = 5 + dovetial_margin_mm;
-
-    points = [
-        [0-knife_margin_mm, y_in],
-        [z, y],
-        [z,-y],
-        [0-knife_margin_mm,-y_in]
-    ];
-
-    rotate([0,-90,0])
-        linear_extrude(height = width_mm + 2, center = true)
-            polygon(points);
-}
 
 module generic_component (height_mm) {
 
     difference() {
-
         // Main body
         translate([-width_mm/2,-depth_mm/2,0])
-            cube([width_mm, depth_mm, height_mm]);
-
+        cube([width_mm, depth_mm, height_mm]);
+        
+        translate([ -width_mm/2 + wall_mm,
+                    -depth_mm/2 + wall_mm,
+                    wall_mm
+        ])
+        cube([width_mm - 2*wall_mm,depth_mm - 2*wall_mm, height_mm - 2*wall_mm]);
         // Female dovetail socket
-            female_dovetail();
+        female_dovetail_knife();
     }
+    
+    dove_tail_shell();
 
     // Male dovetail on top
     translate([0,0,height_mm])

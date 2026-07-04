@@ -23,6 +23,8 @@ RENDER = 1;
 dovetial_margin_mm = 0.5;
 knife_margin_mm = 0.01;
 
+USE_KNIFE = 1;
+
 module dovetail() {
     y = 10;
     y_in = 7;
@@ -38,27 +40,26 @@ module dovetail() {
 // bottom is at origin in z
 
 module generic_component(height_mm) {
-    difference() 
-    {translate([-width_mm/2, -depth_mm/2, 0])
-    cube([width_mm, depth_mm, height_mm]);
+    difference() {
+        translate([-width_mm/2, -depth_mm/2, 0])
+        cube([width_mm, depth_mm, height_mm]);
     
-    translate([-width_mm/2 + wall_mm,-depth_mm/2 + wall_mm,wall_mm
-        ])
+        translate([-width_mm/2 + wall_mm,-depth_mm/2 + wall_mm,wall_mm])
         cube([width_mm - 2*wall_mm,depth_mm - 2*wall_mm, height_mm - wall_mm]);
-        }
+    }
 }
 
-module generic_component(height_mm) {
-    translate([-width_mm/2,-depth_mm/2,0])
-    cube([width_mm,depth_mm, height_mm]);
-    color("yellow");
-    translate([0,0,height_mm])
-    dovetail();
-    
-    // TODO: Cut away interior
-    
-    // Add a femaile dovetail
-}
+//module generic_component(height_mm) {
+//    translate([-width_mm/2,-depth_mm/2,0])
+//    cube([width_mm,depth_mm, height_mm]);
+//    color("yellow");
+//    translate([0,0,height_mm])
+//    dovetail();
+//    
+//    // TODO: Cut away interior
+//    
+//    // Add a femaile dovetail
+//}
 
 module speaker_component() {
     difference() {
@@ -80,22 +81,7 @@ module blank_face_plate() {
 }
 
 
-// Example: Create a working system by composing components
-if (RENDER) {
-    color("blue")
-    generic_component(50);
-    
-    
-    translate([0,0,50])
-    color("green")
-    generic_component(30);
-    
-    translate([150,0,0])
-    color("red")
-    speaker_component();
-}
-
-module female_dovetail() {
+female_dovetail() {
 
     y = 10 + dovetial_margin_mm;
     y_in = 7 + dovetial_margin_mm;
@@ -129,3 +115,20 @@ module generic_component (height_mm) {
     translate([0,0,height_mm])
         dovetail();
 }
+
+// Example: Create a working system by composing components
+if (RENDER) {
+    color("blue")
+    generic_component(50);
+    
+    
+    translate([0,0,50])
+    color("green")
+    generic_component(30);
+    
+    translate([150,0,0])
+    color("red")
+    speaker_component();
+}
+
+module 
