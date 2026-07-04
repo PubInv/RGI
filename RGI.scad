@@ -24,12 +24,15 @@ dovetial_margin_mm = 0.5;
 knife_margin_mm = 0.01;
 wall_mm = 2;
 
+dt_height = 8; // Height is difference from flat top to base.
+
+
 USE_RENDER_KNIFE = 1;
 
-module dovetail() {
+module dovetail(dt_h = dt_height) {
     y = 10;
     y_in = 7;
-    z = 5;
+    z = dt_h;
     points = [[0,y_in],[z,y],[z,-y],[0,-y_in]];
     rotate([0,-90,0])
     linear_extrude(height = width_mm,center = true)
@@ -37,11 +40,11 @@ module dovetail() {
 }
 
 
-module female_dovetail_knife() {
+module female_dovetail_knife(dt_h = dt_height) {
 
     y = 10 + dovetial_margin_mm;
     y_in = 7 + dovetial_margin_mm;
-    z = 5 + dovetial_margin_mm;
+    z = dt_height + dovetial_margin_mm;
 
     points = [
         [0-knife_margin_mm, y_in],
@@ -55,11 +58,10 @@ module female_dovetail_knife() {
             polygon(points);
 }
 
-module dove_tail_shell() {
-
+module dove_tail_shell(dt_h = dt_height) {
     y = 10 + wall_mm;
     y_in = 7 + wall_mm;
-    z = 5 + wall_mm;
+    z = dt_height + wall_mm;
 
     points = [
        [0, y_in],
@@ -73,13 +75,13 @@ module dove_tail_shell() {
         linear_extrude(height = width_mm, center = true)
         polygon(points);
         rotate([0,90,0])
-        female_dovetail_knife();
+        female_dovetail_knife(dt_h);
     }
 }
 
 color("green")
 translate([0,40,0])
-dove_tail_shell();
+dove_tail_shell(dt_height);
 
 module speaker_component() {
     difference() {
@@ -119,11 +121,11 @@ module generic_component (height_mm) {
         female_dovetail_knife();
     }
     
-    dove_tail_shell();
+    dove_tail_shell(dt_height);
 
     // Male dovetail on top
     translate([0,0,height_mm])
-        dovetail();
+        dovetail(dt_height);
 }
 
 
