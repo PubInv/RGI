@@ -84,4 +84,37 @@ if (RENDER) {
 
 dovetail();
 
+module female_dovetail() {
 
+    y = 10 + dovetial_margin_mm;
+    y_in = 7 + dovetial_margin_mm;
+    z = 5 + dovetial_margin_mm;
+
+    points = [
+        [0, y_in],
+        [z, y],
+        [z,-y],
+        [0,-y_in]
+    ];
+
+    rotate([0,-90,0])
+        linear_extrude(height = width_mm + 2, center = true)
+            polygon(points);
+}
+
+module generic_component (height_mm) {
+
+    difference() {
+
+        // Main body
+        translate([-width_mm/2,-depth_mm/2,0])
+            cube([width_mm, depth_mm, height_mm]);
+
+        // Female dovetail socket
+            female_dovetail();
+    }
+
+    // Male dovetail on top
+    translate([0,0,height_mm])
+        dovetail();
+}
