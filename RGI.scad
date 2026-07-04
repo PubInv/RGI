@@ -24,6 +24,8 @@ dovetial_margin_mm = 0.5;
 knife_margin_mm = 0.01;
 wall_mm = 2;
 
+USE_RENDER_KNIFE = 1;
+
 module dovetail() {
     y = 10;
     y_in = 7;
@@ -70,31 +72,14 @@ module dove_tail_shell() {
     difference() {
         linear_extrude(height = width_mm, center = true)
         polygon(points);
-        #rotate([0,90,0])
+        rotate([0,90,0])
         female_dovetail_knife();
     }
-
-
 }
 
 color("green")
 translate([0,40,0])
 dove_tail_shell();
-//
-//// This will have a male top and female bottom dovetail
-//// componets facial geometry is centered iin x and y, but 
-//// bottom is at origin in z
-//module generic_component(height_mm) {
-//    translate([-width_mm/2,-depth_mm/2,0])
-//    cube([width_mm,depth_mm, height_mm]);
-//    color("yellow");
-//    translate([0,0,height_mm])
-//    dovetail();
-//    
-//    // TODO: Cut away interior
-//    
-//    // Add a femaile dovetail
-//}
 
 module speaker_component() {
     difference() {
@@ -116,20 +101,6 @@ module blank_face_plate() {
 }
 
 
-// Example: Create a working system by composing components
-if (RENDER) {
-    color("blue")
-    generic_component(50);
-    
-    
-    translate([0,0,50])
-    color("green")
-    generic_component(30);
-    
-    translate([150,0,0])
-    color("red")
-    speaker_component();
-}
 
 
 module generic_component (height_mm) {
@@ -153,4 +124,30 @@ module generic_component (height_mm) {
     // Male dovetail on top
     translate([0,0,height_mm])
         dovetail();
+}
+
+
+// Example: Create a working system by composing components
+module render() {
+    if (RENDER) {       
+        color("blue")
+        generic_component(50);
+        
+        
+        translate([0,0,50])
+        color("green")
+        generic_component(30);
+        
+        translate([150,0,0])
+        color("red")
+        speaker_component();
+    }
+}
+
+if (USE_RENDER_KNIFE) {
+    difference() {
+        render();
+        translate([300/2,0,0])
+        cube([300,300,300],center=true);
+    }
 }
