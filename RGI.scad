@@ -1,10 +1,14 @@
 
 
 // Put Affero License here
+// TODO FOR JAHNAVI:
+// 1. Fix the narrowness in the wall thickness
+// 2. Add a slot on top where the mail dovetail is.
+// 3. Make all the dovetail consistently resizable (make sure it all fits)
 
 // TODO:
 // 1) Add Licence premable
-// 1.5) Make all components empty boxes instead of solid cubes - Jahanavi
+// 1.5) Make boxes instead of solid cubes - Jahanavi (DONE)
 // 2) Cut the female dovetial -- 
 // 3) Add parameterizes margins (0.5 mm)
 // 4) Make it two dovetails instead of 1
@@ -29,7 +33,7 @@ dt_width = 10;
 dt_narrow_width = 4;
 
 
-USE_RENDER_KNIFE = 1;
+USE_RENDER_KNIFE = 0;
 
 module dovetail(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_width) {
     y = dt_w;
@@ -156,4 +160,6 @@ if (USE_RENDER_KNIFE) {
         translate([300/2,0,0])
         cube([300,300,300],center=true);
     }
+} else {
+    render();
 }
