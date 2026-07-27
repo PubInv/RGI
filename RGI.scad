@@ -1,5 +1,3 @@
-
-
 // Put Affero License here
 // TODO FOR JAHNAVI:
 // 1. Fix the narrowness in the wall thickness
@@ -27,6 +25,7 @@ RENDER = 1;
 dovetial_margin_mm = 0.5;
 knife_margin_mm = 0.01;
 wall_mm = 2;
+cap_margin = 3;
 
 dt_height = 8; // Height is difference from flat top to base.
 dt_width = 10;
@@ -96,11 +95,147 @@ module speaker_component() {
     }
 }
 
+// ---------------------------------------------------------
+// Chamfered exterior corners
+//
+// Chamfers the 4 vertical outside corners only.
+// Top and bottom faces remain square for mating.
+// ---------------------------------------------------------
+module vertical_corner_chamfer(
+    size_x,
+    size_y,
+    size_z,
+    chamfer_mm
+) {
 
-module top_end_plate() {
+    x = size_x / 2;
+    y = size_y / 2;
+    c = chamfer_mm;
+
+    points = [
+        // Bottom
+        [-x+c,-y,0],
+        [ x-c,-y,0],
+        [ x,-y+c,0],
+        [ x,y-c,0],
+        [ x-c,y,0],
+        [-x+c,y,0],
+        [-x,y-c,0],
+        [-x,-y+c,0],
+
+        // Top
+        [-x+c,-y,size_z],
+        [ x-c,-y,size_z],
+        [ x,-y+c,size_z],
+        [ x,y-c,size_z],
+        [ x-c,y,size_z],
+        [-x+c,y,size_z],
+        [-x,y-c,size_z],
+        [-x,-y+c,size_z]
+    ];
+
+    faces = [
+
+        // Bottom
+        [0,1,2,3,4,5,6,7],
+
+        // Outside walls
+        [0,8,9,1],
+        [1,9,10,2],
+        [2,10,11,3],
+        [3,11,12,4],
+        [4,12,13,5],
+        [5,13,14,6],
+        [6,14,15,7],
+        [7,15,8,0],
+
+        // Top
+        [8,15,14,13,12,11,10,9]
+    ];
+
+    polyhedron(
+        points = points,
+        faces = faces,
+        convexity = 10
+    );
+}
+
+
+
+module top_end_plate(cap_height = dt_height + cap_margin) {
+
+    chamfer_mm = 2;
+
+    difference() {
+
+        
+        // Main outer body
+        // Vertical outside corners are chamfered.
+        // Bottom mating face remains square.
+       
+        vertical_corner_chamfer(
+            width_mm,
+            depth_mm,
+            cap_height,
+            chamfer_mm
+        );
+
+  
+        // Interior cavity
+        // Leaves 2 mm walls on the sides
+        // and a 2 mm solid top surface
+        translate([
+            -width_mm/2 + wall_mm,
+            -depth_mm/2 + wall_mm,
+            wall_mm
+        ])
+        cube([
+            width_mm - 2*wall_mm,
+            depth_mm - 2*wall_mm,
+            cap_height - wall_mm
+        ]);
+        
+        // Female dovetail socket
+        female_dovetail_knife(
+            dt_height,
+            dt_width,
+            dt_narrow_width
+        );
+    }
+
+   
+    // Female dovetail shell
+ 
+    dove_tail_shell(dt_height);
 }
 
 module bottom_end_plate() {
+
+    cap_height = wall_mm;
+    chamfer_mm = 2;
+
+    union() {
+
+        // 
+        // Bottom cap with chamfered vertical outside corners
+        // 
+        translate([0,0,-cap_height])
+        vertical_corner_chamfer(
+            width_mm,
+            depth_mm,
+            cap_height,
+            chamfer_mm
+        );
+
+        // 
+        // Male dovetail
+        //
+        dovetail(
+            dt_height,
+            dt_width,
+            dt_narrow_width
+        );
+    }
 }
 
 module blank_face_plate() {
@@ -112,42 +247,76 @@ module blank_face_plate() {
 module generic_component (height_mm) {
 
     difference() {
-        // Main body
-        translate([-width_mm/2,-depth_mm/2,0])
-        cube([width_mm, depth_mm, height_mm]);
-        
-        translate([ -width_mm/2 + wall_mm,
-                    -depth_mm/2 + wall_mm,
-                    wall_mm
+
+        // Main body with chamfered vertical outside corners
+        vertical_corner_chamfer(
+            width_mm,
+            depth_mm,
+            height_mm,
+            2
+        );
+
+        // Interior cavity
+        translate([
+            -width_mm/2 + wall_mm,
+            -depth_mm/2 + wall_mm,
+            wall_mm
         ])
-        cube([width_mm - 2*wall_mm,depth_mm - 2*wall_mm, height_mm - 2*wall_mm]);
+        cube([
+            width_mm - 2*wall_mm,
+            depth_mm - 2*wall_mm,
+            height_mm - 2*wall_mm
+        ]);
+
         // Female dovetail socket
-        female_dovetail_knife(dt_height,dt_width,dt_narrow_width);
+        female_dovetail_knife(
+            dt_height,
+            dt_width,
+            dt_narrow_width
+        );
     }
-    
+
+    // Female dovetail shell
     dove_tail_shell(dt_height);
 
     // Male dovetail on top
     translate([0,0,height_mm])
-        dove_tail_shell(dt_height+1,dt_width+1,dt_narrow_width+1);
+        dove_tail_shell(
+            dt_height+1,
+            dt_width+1,
+            dt_narrow_width+1
+        );
 }
+
 
 
 // Example: Create a working system by composing components
 module render() {
     if (RENDER) {       
+                // Bottom cap
+        color("gray")
+        bottom_end_plate();
+
+        // First component
         color("blue")
         generic_component(50);
-        
-        
+
+        // Second component
         translate([0,0,50])
         color("green")
         generic_component(30);
-        
+
+        // Top cap
+        translate([0,0,50+30
+        ])
+        color("gray")
+        top_end_plate();
+
+        // Existing examples
         translate([150,0,0])
         color("red")
         speaker_component();
-        
+
         color("green")
         translate([0,40,0])
         dove_tail_shell(dt_height+3);
