@@ -21,7 +21,7 @@
 
 depth_mm = 50;
 width_mm = 140;
-RENDER = 1;
+
 dovetial_margin_mm = 0.5;
 knife_margin_mm = 0.01;
 wall_mm = 2;
@@ -31,6 +31,11 @@ dt_height = 8; // Height is difference from flat top to base.
 dt_width = 10;
 dt_narrow_width = 4;
 
+RENDER = 1;
+RENDER_BOTTOM = 1;
+RENDER_TOP = 1;
+RENDER_FIT_TEST = 1;
+RENDER_FIRST = 0;
 
 USE_RENDER_KNIFE = 0;
 
@@ -292,30 +297,39 @@ module generic_component (height_mm) {
 
 // Example: Create a working system by composing components
 module render() {
-    if (RENDER) {       
-                // Bottom cap
-        color("gray")
-        bottom_end_plate();
+    if (RENDER) { 
 
-        // First component
-        color("blue")
-        generic_component(50);
+        if (RENDER_BOTTOM) {
+                // Bottom cap
+            color("gray")
+            bottom_end_plate();
+        }
+
+        if (RENDER_FIRST) {
+            // First component
+            color("blue")
+            generic_component(50);
+        }
 
         // Second component
         translate([0,0,50])
         color("green")
         generic_component(30);
 
-        // Top cap
-        translate([0,0,50+30
-        ])
-        color("gray")
-        top_end_plate();
+        
+        if (RENDER_TOP) {
+            // Top cap
+            translate([0,0,50+30])
+            color("gray")
+            top_end_plate();
+        }
 
-        // Existing examples
-        translate([150,0,0])
-        color("red")
-        speaker_component();
+        if (RENDER_FIT_TEST) {
+            // Existing examples
+            translate([141,0,0])
+            color("red")
+            speaker_component();
+        }
 
         color("green")
         translate([0,40,0])
