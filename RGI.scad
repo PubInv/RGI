@@ -18,6 +18,27 @@
 
 
 // Initial size configuration
+//maths
+wall_mm = 2; //thickness = distance
+dt_height = 8; //height = CE; 
+dt_width = 15; //shoulder_width = AB; 
+dt_narrow_width = 4; //neck_width = CD; 
+shoulder_leftover = (dt_width - dt_narrow_width)/2; 
+//for left and right 
+cheek_length = sqrt(shoulder_leftover*shoulder_leftover +dt_height*dt_height);
+theta= atan(dt_height/ shoulder_leftover);
+
+function coordinates(wall_mm,dt_height,dt_width, dt_narrow_width, shoulder_leftover,theta)= 
+let(A = [-dt_width/2, dt_height],B = [ dt_width/2, dt_height],C = [-dt_narrow_width/2, 0],D = [ dt_narrow_width/2, 0], 
+//now for A', B', C', D'
+//X  = X1 + (Distance * sin theta) 
+//Y = Y1 + (Distance * cos theta) 
+A_offset = [A[0] + wall_mm*sin(theta), A[1] + wall_mm*cos(theta)],
+B_offset = [B[0] + wall_mm*sin(theta),B[1] + wall_mm*cos(theta)],
+C_offset = [C[0] + wall_mm*sin(theta), C[1] + wall_mm*cos(theta)],
+D_offset = [D[0] + wall_mm* sin(theta),D[1] + wall_mm*cos(theta)],
+)
+[A, B, C, D, A_offset,B_offset, C_offset, D_offset];
 
 depth_mm = 50;
 width_mm = 140;
@@ -26,10 +47,6 @@ dovetial_margin_mm = 0.5;
 knife_margin_mm = 0.01;
 wall_mm = 2;
 cap_margin = 3;
-
-dt_height = 8; // Height is difference from flat top to base.
-dt_width = 10;
-dt_narrow_width = 4;
 
 RENDER = 1;
 RENDER_BOTTOM = 1;
