@@ -18,41 +18,20 @@
 
 
 // Initial size configuration
-//maths
-wall_mm = 2; //thickness = distance
-dt_height = 8; //height = CE; 
-dt_width = 15; //shoulder_width = AB; 
-dt_narrow_width = 4; //neck_width = CD; 
-shoulder_leftover = (dt_width - dt_narrow_width)/2; 
-//for left and right 
-cheek_length = sqrt(shoulder_leftover*shoulder_leftover +dt_height*dt_height);
-theta= atan(dt_height/ shoulder_leftover);
-
-function coordinates(wall_mm,dt_height,dt_width, dt_narrow_width, shoulder_leftover,theta)= 
-let(A = [-dt_width/2, dt_height],B = [ dt_width/2, dt_height],C = [-dt_narrow_width/2, 0],D = [ dt_narrow_width/2, 0], 
-//now for A', B', C', D'
-//X  = X1 + (Distance * sin theta) 
-//Y = Y1 + (Distance * cos theta) 
-A_offset = [A[0] + wall_mm*sin(theta), A[1] + wall_mm*cos(theta)],
-B_offset = [B[0] + wall_mm*sin(theta),B[1] + wall_mm*cos(theta)],
-C_offset = [C[0] + wall_mm*sin(theta), C[1] + wall_mm*cos(theta)],
-D_offset = [D[0] + wall_mm* sin(theta),D[1] + wall_mm*cos(theta)]
-)
-[A, B, C, D, A_offset,B_offset, C_offset, D_offset];
 
 depth_mm = 50;
 width_mm = 140;
-
+RENDER = 1;
 dovetial_margin_mm = 0.5;
 knife_margin_mm = 0.01;
 wall_mm = 2;
-cap_margin_mm = 4;
+cap_margin = 6;
+corner_radius_mm = 2;
 
-RENDER = 1;
-RENDER_BOTTOM = 1;
-RENDER_TOP = 1;
-RENDER_FIT_TEST = 1;
-RENDER_FIRST = 0;
+dt_height = 8; // Height is difference from flat top to base.
+dt_width = 10;
+dt_narrow_width = 4;
+
 
 USE_RENDER_KNIFE = 0;
 
@@ -124,12 +103,13 @@ module speaker_component() {
 // Top and bottom faces remain square for mating.
 // ---------------------------------------------------------
 module vertical_corner_chamfer(
-size_x,
+ 
+    size_x,
     size_y,
     size_z,
     corner_radius_mm,
-    fn = 64) 
-{
+    fn = 64
+) {
 
     linear_extrude(height = size_z)
         offset(r = corner_radius_mm, $fn = fn)
@@ -143,7 +123,9 @@ size_x,
                 );
 }
 
-module top_end_plate(cap_height = dt_height + cap_margin_mm) {
+
+
+module top_end_plate(cap_height = dt_height + cap_margin) {
 
     chamfer_mm = 2;
 
@@ -273,39 +255,30 @@ module generic_component (height_mm) {
 
 // Example: Create a working system by composing components
 module render() {
-    if (RENDER) { 
-
-        if (RENDER_BOTTOM) {
+    if (RENDER) {       
                 // Bottom cap
-            color("gray")
-            bottom_end_plate();
-        }
+        color("gray")
+        bottom_end_plate();
 
-        if (RENDER_FIRST) {
-            // First component
-            color("blue")
-            generic_component(50);
-        }
+        // First component
+        color("blue")
+        generic_component(50);
 
         // Second component
         translate([0,0,50])
         color("green")
         generic_component(30);
 
-        
-        if (RENDER_TOP) {
-            // Top cap
-            translate([0,0,50+30])
-            color("gray")
-            top_end_plate();
-        }
+        // Top cap
+        translate([0,0,50+30
+        ])
+        color("gray")
+        top_end_plate();
 
-        if (RENDER_FIT_TEST) {
-            // Existing examples
-            translate([141,0,0])
-            color("red")
-            speaker_component();
-        }
+        // Existing examples
+        translate([150,0,0])
+        color("red")
+        speaker_component();
 
         color("green")
         translate([0,40,0])
