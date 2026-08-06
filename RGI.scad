@@ -1,5 +1,3 @@
-
-
 // Put Affero License here
 // TODO FOR JAHNAVI:
 // 1. Fix the narrowness in the wall thickness
@@ -20,19 +18,43 @@
 
 
 // Initial size configuration
+//maths
+wall_mm = 2; //thickness = distance
+dt_height = 8; //height = CE; 
+dt_width = 15; //shoulder_width = AB; 
+dt_narrow_width = 4; //neck_width = CD; 
+shoulder_leftover = (dt_width - dt_narrow_width)/2; 
+//for left and right 
+cheek_length = sqrt(shoulder_leftover*shoulder_leftover +dt_height*dt_height);
+theta= atan(dt_height/ shoulder_leftover);
+
+function coordinates(wall_mm,dt_height,dt_width, dt_narrow_width, shoulder_leftover,theta)= 
+let(A = [-dt_width/2, dt_height],B = [ dt_width/2, dt_height],C = [-dt_narrow_width/2, 0],D = [ dt_narrow_width/2, 0], 
+//now for A', B', C', D'
+//X  = X1 + (Distance * sin theta) 
+//Y = Y1 + (Distance * cos theta) 
+A_offset = [A[0] + wall_mm*sin(theta), A[1] + wall_mm*cos(theta)],
+B_offset = [B[0] + wall_mm*sin(theta),B[1] + wall_mm*cos(theta)],
+C_offset = [C[0] + wall_mm*sin(theta), C[1] + wall_mm*cos(theta)],
+D_offset = [D[0] + wall_mm* sin(theta),D[1] + wall_mm*cos(theta)]
+)
+[A, B, C, D, A_offset,B_offset, C_offset, D_offset];
+
 
 depth_mm = 50;
 width_mm = 140;
-RENDER = 1;
+
 dovetial_margin_mm = 0.5;
 knife_margin_mm = 0.01;
 wall_mm = 2;
-cap_margin = 3;
+cap_margin = 4;
+corner_radius_mm = 2;
 
-dt_height = 8; // Height is difference from flat top to base.
-dt_width = 10;
-dt_narrow_width = 4;
-
+RENDER = 1;
+RENDER_BOTTOM = 1;
+RENDER_TOP = 1;
+RENDER_FIT_TEST = 1;
+RENDER_FIRST = 0;
 
 USE_RENDER_KNIFE = 0;
 
@@ -104,64 +126,25 @@ module speaker_component() {
 // Top and bottom faces remain square for mating.
 // ---------------------------------------------------------
 module vertical_corner_chamfer(
+    
     size_x,
     size_y,
     size_z,
-    chamfer_mm
+    corner_radius_mm,
+    fn = 64
 ) {
 
-    x = size_x / 2;
-    y = size_y / 2;
-    c = chamfer_mm;
-
-    points = [
-        // Bottom
-        [-x+c,-y,0],
-        [ x-c,-y,0],
-        [ x,-y+c,0],
-        [ x,y-c,0],
-        [ x-c,y,0],
-        [-x+c,y,0],
-        [-x,y-c,0],
-        [-x,-y+c,0],
-
-        // Top
-        [-x+c,-y,size_z],
-        [ x-c,-y,size_z],
-        [ x,-y+c,size_z],
-        [ x,y-c,size_z],
-        [ x-c,y,size_z],
-        [-x+c,y,size_z],
-        [-x,y-c,size_z],
-        [-x,-y+c,size_z]
-    ];
-
-    faces = [
-
-        // Bottom
-        [0,1,2,3,4,5,6,7],
-
-        // Outside walls
-        [0,8,9,1],
-        [1,9,10,2],
-        [2,10,11,3],
-        [3,11,12,4],
-        [4,12,13,5],
-        [5,13,14,6],
-        [6,14,15,7],
-        [7,15,8,0],
-
-        // Top
-        [8,15,14,13,12,11,10,9]
-    ];
-
-    polyhedron(
-        points = points,
-        faces = faces,
-        convexity = 10
-    );
+    linear_extrude(height = size_z)
+        offset(r = corner_radius_mm, $fn = fn)
+            offset(delta = -corner_radius_mm)
+                square(
+                    [
+                        size_x,
+                        size_y
+                    ],
+                    center = true
+                );
 }
-
 
 
 module top_end_plate(cap_height = dt_height + cap_margin) {
@@ -194,7 +177,7 @@ module top_end_plate(cap_height = dt_height + cap_margin) {
         cube([
             width_mm - 2*wall_mm,
             depth_mm - 2*wall_mm,
-            cap_height - wall_mm
+            cap_height - 2*wall_mm
         ]);
         
         // Female dovetail socket
@@ -294,30 +277,39 @@ module generic_component (height_mm) {
 
 // Example: Create a working system by composing components
 module render() {
-    if (RENDER) {       
-                // Bottom cap
-        color("gray")
-        bottom_end_plate();
+    if (RENDER) { 
 
-        // First component
-        color("blue")
-        generic_component(50);
+        if (RENDER_BOTTOM) {
+                // Bottom cap
+            color("gray")
+            bottom_end_plate();
+        }
+
+        if (RENDER_FIRST) {
+            // First component
+            color("blue")
+            generic_component(50);
+        }
 
         // Second component
         translate([0,0,50])
         color("green")
         generic_component(30);
 
-        // Top cap
-        translate([0,0,50+30
-        ])
-        color("gray")
-        top_end_plate();
+        
+        if (RENDER_TOP) {
+            // Top cap
+            translate([0,0,50+30])
+            color("gray")
+            top_end_plate();
+        }
 
-        // Existing examples
-        translate([150,0,0])
-        color("red")
-        speaker_component();
+        if (RENDER_FIT_TEST) {
+            // Existing examples
+            translate([141,0,0])
+            color("red")
+            speaker_component();
+        }
 
         color("green")
         translate([0,40,0])
