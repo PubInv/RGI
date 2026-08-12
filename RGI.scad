@@ -21,42 +21,68 @@
 //maths
 wall_mm = 2; //thickness = distance
 dt_height = 8; //height = CE; 
-dt_width = 15; //shoulder_width = AB; 
-dt_narrow_width = 4; //neck_width = CD; 
+dt_width = 16; //shoulder_width = AB; 
+dt_narrow_width = 10; //neck_width = CD; 
 shoulder_leftover = (dt_width - dt_narrow_width)/2; 
 //for left and right 
 cheek_length = sqrt(shoulder_leftover*shoulder_leftover +dt_height*dt_height);
 theta= atan(dt_height/ shoulder_leftover);
 
-function coordinates(wall_mm,dt_height,dt_width, dt_narrow_width, shoulder_leftover,theta)= 
-let(A = [-dt_width/2, dt_height],B = [ dt_width/2, dt_height],C = [-dt_narrow_width/2, 0],D = [ dt_narrow_width/2, 0], 
+function coordinates(wall_mm,dt_height,dt_width, dt_narrow_width)= 
+let(A = [-dt_width/2, dt_height],B = [ dt_width/2, dt_height],C = [-dt_narrow_width/2, 0],D = [ dt_narrow_width/2, 0],
+ shoulder_leftover = (dt_width - dt_narrow_width)/2,
+ theta= atan(dt_height/ shoulder_leftover),
+ x = wall_mm/ tan(theta),
+ echo("theta",theta),
 //now for A', B', C', D'
 //X  = X1 + (Distance * sin theta) 
 //Y = Y1 + (Distance * cos theta) 
-A_offset = [A[0] + wall_mm*sin(theta), A[1] + wall_mm*cos(theta)],
-B_offset = [B[0] + wall_mm*sin(theta),B[1] + wall_mm*cos(theta)],
-C_offset = [C[0] + wall_mm*sin(theta), C[1] + wall_mm*cos(theta)],
-D_offset = [D[0] + wall_mm* sin(theta),D[1] + wall_mm*cos(theta)]
-)
+A_offset = [A[0] + wall_mm + x, A[1] - wall_mm],
+B_offset = [B[0] + -(wall_mm+x),B[1] - wall_mm],
+C_offset = [C[0] + wall_mm, C[1] ],
+D_offset = [D[0] + -wall_mm,D[1] ]
+) // TODO: Change naming of points to match traveling around a polygon
 [A, B, C, D, A_offset,B_offset, C_offset, D_offset];
-
 
 depth_mm = 50;
 width_mm = 140;
 
-dovetial_margin_mm = 0.5;
+dovetial_margin_mm = 0.5; // this is the tolerance gap between the tail and cado
 knife_margin_mm = 0.01;
-wall_mm = 2;
-cap_margin = 4;
-corner_radius_mm = 2;
+cap_margin_mm = 4;
 
 RENDER = 1;
-RENDER_BOTTOM = 1;
-RENDER_TOP = 1;
+RENDER_BOTTOM = 0;
+RENDER_TOP = 0;
 RENDER_FIT_TEST = 1;
 RENDER_FIRST = 0;
 
 USE_RENDER_KNIFE = 0;
+
+
+module test_coordinates() { 
+    values = 
+        coordinates(wall_mm,dt_height,dt_width, dt_narrow_width);
+    A = values[0];
+    B = values[1];
+    C = values[2];
+    D = values[3];
+    Ap = values[4];
+    Bp = values[5];
+    Cp = values[6];
+    Dp = values[7];
+    // , B, C, D, A_offset,B_offset, C_offset, D_offset]
+    echo("Test Values");
+   echo(A); 
+   
+   color("red")
+   linear_extrude(height=1,center=true)
+   polygon([A,B,D,C]);
+    translate([0,0,2])
+    color("green")
+    linear_extrude(height=1,center=true)
+    polygon([Ap,Bp,Dp,Cp]);
+}
 
 module dovetail(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_width) {
     y = dt_w;
@@ -126,13 +152,12 @@ module speaker_component() {
 // Top and bottom faces remain square for mating.
 // ---------------------------------------------------------
 module vertical_corner_chamfer(
-    
-    size_x,
+size_x,
     size_y,
     size_z,
     corner_radius_mm,
-    fn = 64
-) {
+    fn = 64) 
+{
 
     linear_extrude(height = size_z)
         offset(r = corner_radius_mm, $fn = fn)
@@ -146,8 +171,7 @@ module vertical_corner_chamfer(
                 );
 }
 
-
-module top_end_plate(cap_height = dt_height + cap_margin) {
+module top_end_plate(cap_height = dt_height + cap_margin_mm) {
 
     chamfer_mm = 2;
 
@@ -291,10 +315,10 @@ module render() {
             generic_component(50);
         }
 
-        // Second component
-        translate([0,0,50])
-        color("green")
-        generic_component(30);
+//        // Second component
+//        translate([0,0,50])
+//        color("green")
+//        generic_component(30);
 
         
         if (RENDER_TOP) {
@@ -306,14 +330,13 @@ module render() {
 
         if (RENDER_FIT_TEST) {
             // Existing examples
-            translate([141,0,0])
-            color("red")
-            speaker_component();
+ //           speaker_component();
+            test_coordinates();
         }
 
-        color("green")
-        translate([0,40,0])
-        dove_tail_shell(dt_height+3);
+//        color("green")
+//        translate([0,40,0])
+//        dove_tail_shell(dt_height+3);
     }
 }
 
