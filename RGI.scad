@@ -50,12 +50,15 @@ width_mm = 140;
 dovetial_margin_mm = 0.5; // this is the tolerance gap between the tail and cado
 knife_margin_mm = 0.01;
 cap_margin_mm = 4;
+corner_radius_mm = 2;
+horizontal_radius_mm = 2;
+fillet_fn = 64;
 
 RENDER = 1;
-RENDER_BOTTOM = 0;
-RENDER_TOP = 0;
+RENDER_BOTTOM = 1;
+RENDER_TOP = 1;
 RENDER_FIT_TEST = 1;
-RENDER_FIRST = 0;
+RENDER_FIRST = 1;
 
 USE_RENDER_KNIFE = 0;
 
@@ -171,28 +174,261 @@ size_x,
                 );
 }
 
-module top_end_plate(cap_height = dt_height + cap_margin_mm) {
+module horizontal_top_chamfer(
+    size_x,
+    size_y,
+    size_z,
+    radius,
+    fn = 64
+) {
 
-    chamfer_mm = 2;
+    intersection() {
+
+
+        rotate([90,0,0])
+        linear_extrude(
+            height = size_y,
+            center = true
+        )
+        polygon(
+            concat(
+
+                // Bottom-left
+                [
+                    [-size_x/2, 0]
+                ],
+
+                // Bottom-right
+                [
+                    [size_x/2, 0]
+                ],
+
+                // Right vertical wall
+                [
+                    [size_x/2, size_z-radius]
+                ],
+
+                // Right top quarter-circle
+                [
+                    for (i = [0:fn/4])
+                        [
+                            size_x/2-radius
+                                + radius*cos(i*90/(fn/4)),
+                            size_z-radius
+                                + radius*sin(i*90/(fn/4))
+                        ]
+                ],
+
+                // Top
+                [
+                    [-size_x/2+radius, size_z]
+                ],
+
+                // Left top quarter-circle
+                [
+                    for (i = [0:fn/4])
+                        [
+                            -size_x/2+radius
+                                - radius*sin(i*90/(fn/4)),
+                            size_z-radius
+                                + radius*cos(i*90/(fn/4))
+                        ]
+                ]
+            )
+        );
+
+        rotate([90,0,90])
+        linear_extrude(
+            height = size_x,
+            center = true
+        )
+        polygon(
+            concat(
+
+                // Bottom-left
+                [
+                    [-size_y/2, 0]
+                ],
+
+                // Bottom-right
+                [
+                    [size_y/2, 0]
+                ],
+
+                // Right vertical wall
+                [
+                    [size_y/2, size_z-radius]
+                ],
+
+                // Right top quarter-circle
+                [
+                    for (i = [0:fn/4])
+                        [
+                            size_y/2-radius
+                                + radius*cos(i*90/(fn/4)),
+                            size_z-radius
+                                + radius*sin(i*90/(fn/4))
+                        ]
+                ],
+
+                // Top
+                [
+                    [-size_y/2+radius, size_z]
+                ],
+
+                // Left top quarter-circle
+                [
+                    for (i = [0:fn/4])
+                        [
+                            -size_y/2+radius
+                                - radius*sin(i*90/(fn/4)),
+                            size_z-radius
+                                + radius*cos(i*90/(fn/4))
+                        ]
+                ]
+            )
+        );
+    }
+}
+module horizontal_bottom_chamfer(
+    size_x,
+    size_y,
+    size_z,
+    radius,
+    fn = 64
+) {
+
+    intersection() {
+
+        rotate([90,0,0])
+        linear_extrude(
+            height = size_y,
+            center = true
+        )
+        polygon(
+            concat(
+
+                // Top-left
+                [
+                    [-size_x/2, size_z]
+                ],
+
+                // Top-right
+                [
+                    [size_x/2, size_z]
+                ],
+
+                // Right vertical wall
+                [
+                    [size_x/2, radius]
+                ],
+
+                // Right bottom quarter-circle
+                [
+                    for (i = [0:fn/4])
+                        [
+                            size_x/2-radius
+                                + radius*cos(i*90/(fn/4)),
+                            radius
+                                - radius*sin(i*90/(fn/4))
+                        ]
+                ],
+
+                // Bottom
+                [
+                    [-size_x/2+radius, 0]
+                ],
+
+                // Left bottom quarter-circle
+                [
+                    for (i = [0:fn/4])
+                        [
+                            -size_x/2+radius
+                                - radius*sin(i*90/(fn/4)),
+                            radius
+                                - radius*cos(i*90/(fn/4))
+                        ]
+                ]
+            )
+        );
+
+        rotate([90,0,90])
+        linear_extrude(
+            height = size_x,
+            center = true
+        )
+        polygon(
+            concat(
+
+                // Top-left
+                [
+                    [-size_y/2, size_z]
+                ],
+
+                // Top-right
+                [
+                    [size_y/2, size_z]
+                ],
+
+                // Right vertical wall
+                [
+                    [size_y/2, radius]
+                ],
+
+                // Right bottom quarter-circle
+                [
+                    for (i = [0:fn/4])
+                        [
+                            size_y/2-radius
+                                + radius*cos(i*90/(fn/4)),
+                            radius
+                                - radius*sin(i*90/(fn/4))
+                        ]
+                ],
+
+                // Bottom
+                [
+                    [-size_y/2+radius, 0]
+                ],
+
+                // Left bottom quarter-circle
+                [
+                    for (i = [0:fn/4])
+                        [
+                            -size_y/2+radius
+                                - radius*sin(i*90/(fn/4)),
+                            radius
+                                - radius*cos(i*90/(fn/4))
+                        ]
+                ]
+            )
+        );
+    }
+}
+module top_end_plate(
+    cap_height = dt_height + cap_margin_mm
+) {
 
     difference() {
 
-        
-        // Main outer body
-        // Vertical outside corners are chamfered.
-        // Bottom mating face remains square.
-       
-        vertical_corner_chamfer(
-            width_mm,
-            depth_mm,
-            cap_height,
-            chamfer_mm
-        );
+        intersection() {
 
-  
-        // Interior cavity
-        // Leaves 2 mm walls on the sides
-        // and a 2 mm solid top surface
+            vertical_corner_chamfer(
+                width_mm,
+                depth_mm,
+                cap_height,
+                corner_radius_mm,
+                fillet_fn
+            );
+
+            horizontal_top_chamfer(
+                width_mm,
+                depth_mm,
+                cap_height,
+                horizontal_radius_mm,
+                fillet_fn
+            );
+        }
         translate([
             -width_mm/2 + wall_mm,
             -depth_mm/2 + wall_mm,
@@ -203,42 +439,41 @@ module top_end_plate(cap_height = dt_height + cap_margin_mm) {
             depth_mm - 2*wall_mm,
             cap_height - 2*wall_mm
         ]);
-        
-        // Female dovetail socket
+
         female_dovetail_knife(
             dt_height,
             dt_width,
             dt_narrow_width
         );
     }
-
-   
-    // Female dovetail shell
- 
-    dove_tail_shell(dt_height);
 }
-
 module bottom_end_plate() {
 
     cap_height = wall_mm;
-    chamfer_mm = 2;
-
     union() {
 
-        // 
-        // Bottom cap with chamfered vertical outside corners
-        // 
+        // Rounded bottom cap body
         translate([0,0,-cap_height])
-        vertical_corner_chamfer(
-            width_mm,
-            depth_mm,
-            cap_height,
-            chamfer_mm
-        );
+        intersection() {
 
-        // 
+            vertical_corner_chamfer(
+                width_mm,
+                depth_mm,
+                cap_height,
+                corner_radius_mm,
+                fillet_fn
+            );
+
+            horizontal_bottom_chamfer(
+                width_mm,
+                depth_mm,
+                cap_height,
+                corner_radius_mm,
+                fillet_fn
+            );
+        }
+
         // Male dovetail
-        //
         dovetail(
             dt_height,
             dt_width,
