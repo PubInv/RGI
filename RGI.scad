@@ -445,6 +445,8 @@ module top_end_plate(
             dt_width,
             dt_narrow_width
         );
+        
+        buckle_clip_slot();
     }
 }
 module bottom_end_plate() {
@@ -532,9 +534,165 @@ module generic_component (height_mm) {
         );
 }
 
+// Used under Creative-Commons BY-SA from You Magazine by "amcmichael" https://youmagine.com/amcmichael
+// Buckle dimensions
+buckle_width  = depth_mm-12.35;
+buckle_height = 5;
+buckle_length = depth_mm;
+
+// Clip dimensions
+clip_length       = 20;
+clip_width        = 6.35;
+clip_clasp_length = 5;
+
+// Prong dimensions
+prong_length     = buckle_length - clip_length;
+prong_side_width = 4;
+prong_offset     = 3;
+
+// Locking mechanism
+lock_length = 10;
+lock_width  = 5;
+lock_offset = 2;
+
+// Rounded edges
+minkowski_rad    = 2;
+minkowski_height = 0.1;
+
+$fn = 120;
 
 
-// Example: Create a working system by composing components
+// ============================================================
+// Male Buckle
+// ============================================================
+
+module male_buckle() {
+    union() {
+        male_prongs();
+    }
+}
+
+
+// ============================================================
+// Two Side Prongs + Locking Mechanisms
+// ============================================================
+
+module male_prongs() {
+
+    // Lower/left prong
+    translate([
+        clip_length + clip_clasp_length,
+        prong_offset,
+        0
+    ])
+        cube([
+            prong_length,
+            prong_side_width,
+            buckle_height
+        ]);
+
+    // Lower/left locking mechanism
+    locking_mechanism();
+
+
+    // Upper/right prong
+    translate([
+        clip_length + clip_clasp_length,
+        buckle_width + 2*clip_width
+            - prong_side_width
+            - prong_offset,
+        0
+    ])
+        cube([
+            prong_length,
+            prong_side_width,
+            buckle_height
+        ]);
+
+    // Upper/right locking mechanism
+    translate([
+        0,
+        buckle_width + 2*clip_width,
+        0
+    ])
+        mirror([0, 1, 0])
+            locking_mechanism();
+}
+
+
+// ============================================================
+// Locking Mechanism
+// ============================================================
+module locking_mechanism() {
+
+    vert_pos = prong_offset - 3;
+
+    hull() {
+
+        // Main angled locking section
+        translate([
+            buckle_length + clip_clasp_length - 11,
+            vert_pos,
+            0
+        ])
+            linear_extrude(buckle_height)
+                polygon(points = [
+                    [0, 0],
+                    [lock_length, 0],
+                    [lock_length + lock_offset, lock_width],
+                    [lock_offset, lock_width]
+                ]);
+
+        // Rounded end
+        translate([
+            buckle_length + clip_clasp_length,
+            6 + vert_pos,
+            0
+        ])
+            cylinder(
+                r = 2,
+                h = buckle_height
+            );
+
+        // Rounded transition
+        translate([
+            buckle_length + clip_clasp_length,
+            2.8,
+            0
+        ])
+            rotate([0, 0, 60])
+                scale([1, 0.5])
+                    linear_extrude(height = buckle_height)
+                        circle(d = 6);
+    }
+}
+
+translate([
+    (buckle_length/2)-clip_length,
+    -(buckle_width + 2*clip_width)/2,
+    81.5
+])
+    male_buckle();
+
+// ============================================================
+// Buckle clip slot
+// ============================================================
+module buckle_clip_slot(
+    length = lock_length+.5,
+    width = buckle_width + 2*clip_width,
+    height = buckle_height + .5
+) {
+
+    translate([(buckle_length),
+        -(buckle_width + 2*clip_width)/2,
+        +1
+    ])
+        cube([
+            length,
+            width,
+            height
+        ]);
+}
 module render() {
     if (RENDER) { 
 
