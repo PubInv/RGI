@@ -55,11 +55,13 @@ horizontal_radius_mm = 2;
 fillet_fn = 64;
 
 RENDER = 1;
-RENDER_BOTTOM = 1;
+RENDER_BOTTOM = 0;
 RENDER_TOP = 1;
 RENDER_FIT_TEST = 1;
-RENDER_FIRST = 1;
-
+RENDER_FIRST = 0;
+RENDER_SECOND = 0;
+RENDER_MALE_BUCKLE=1;
+RENDER_FEMALE_BUCKLE=1;
 USE_RENDER_KNIFE = 0;
 
 
@@ -405,9 +407,9 @@ module horizontal_bottom_chamfer(
         );
     }
 }
+
 module top_end_plate(
-    cap_height = dt_height + cap_margin_mm
-) {
+    cap_height = dt_height + cap_margin_mm + buckle_height+case_thickness) {
 
     difference() {
 
@@ -429,6 +431,8 @@ module top_end_plate(
                 fillet_fn
             );
         }
+
+        // Interior cavity
         translate([
             -width_mm/2 + wall_mm,
             -depth_mm/2 + wall_mm,
@@ -440,14 +444,22 @@ module top_end_plate(
             cap_height - 2*wall_mm
         ]);
 
+        // Female dovetail
         female_dovetail_knife(
             dt_height,
             dt_width,
-            dt_narrow_width
-        );
+            dt_narrow_width);
         
-        buckle_clip_slot();
+        translate([(width_mm/2)-prong_length,-depth_mm/2-1,-1])
+        
+        cube([(prong_length+1),depth_mm+2,buckle_height+case_thickness+dt_height+ cap_margin_mm+1]);
+
+      
     }
+    translate([prong_length/2,-(buckle_width/2)-clip_width,dt_height + cap_margin_mm])
+    male_buckle();
+    
+    
 }
 module bottom_end_plate() {
 
@@ -534,52 +546,436 @@ module generic_component (height_mm) {
         );
 }
 
-// Used under Creative-Commons BY-SA from You Magazine by "amcmichael" https://youmagine.com/amcmichael
-// Buckle dimensions
-buckle_width  = depth_mm-12.35;
-buckle_height = 5;
-buckle_length = depth_mm;
+// Used under Creative-Commons BY-SA from You Magazine by "amcmichael"
+// https://youmagine.com/amcmichael
 
-// Clip dimensions
-clip_length       = 20;
-clip_width        = 6.35;
+
+// ============================================================
+// Buckle Dimensions
+// ============================================================
+
+buckle_width  = 25.4; // Buckle dimension based on the inner width of the strap connector
+buckle_height = 10;
+buckle_length = buckle_width * 2;
+
+
+// ============================================================
+// Clip Dimensions
+// ============================================================
+
+clip_length       = 24; 
+clip_width        = 6.35; // extra material added to side of clip 
 clip_clasp_length = 5;
 
-// Prong dimensions
-prong_length     = buckle_length - clip_length;
-prong_side_width = 4;
-prong_offset     = 3;
 
-// Locking mechanism
+// ============================================================
+// Prong Dimensions
+// ============================================================
+
+prong_length       = buckle_length - clip_length;
+prong_center_width = 6; // width of the center prong
+prong_center_tap   = prong_center_width/2;
+prong_side_width   = 4; // width of the side prongs
+prong_offset       = 3; // difference between prong location and overall buckle width
+
+
+// ============================================================
+// Locking Mechanism
+// ============================================================
+
 lock_length = 10;
 lock_width  = 5;
-lock_offset = 2;
+lock_offset = 2; // the latching angle (decrease for smaller locking angle)
 
-// Rounded edges
+
+// ============================================================
+// Casing Dimensions
+// ============================================================
+
+case_thickness     = 2;
+sf                 = 1;
+track_thickness    = 2;
+track_height       = 2;
+wiggle_room_factor = 1.2;
+
+
+// ============================================================
+// Rounded Edges
+// ============================================================
+
 minkowski_rad    = 2;
 minkowski_height = 0.1;
 
 $fn = 120;
 
 
-// ============================================================
-// Male Buckle
-// ============================================================
-
-module male_buckle() {
-    union() {
-        male_prongs();
+module female_buckle(){
+    
+    difference(){
+        
+        union(){
+            female_clip();
+            female_casing();
+        }        
+  
+        // Locking mechanism access ellipse 1
+        translate([
+            lock_length + lock_offset + clip_length/2,
+            0,
+            -2
+        ])
+            scale([1, 0.5])            
+                linear_extrude(height = buckle_height*2)
+                    circle(d = 20);
+        
+        // Locking mechanism access ellipse 2        
+        translate([
+            lock_length + lock_offset + clip_length/2,
+            buckle_width + 2*(clip_width-minkowski_rad)
+                + 2*sf + case_thickness,
+            -2
+        ])
+            scale([1, 0.5])
+                linear_extrude(height = buckle_height*2)
+                    circle(d = 20);
     }
 }
 
 
+module female_clip(){    
+    
+    // Back
+    minkowski(){   
+        translate([minkowski_rad, minkowski_rad, 0])
+            cube([
+                clip_clasp_length - 2*minkowski_rad,
+                buckle_width + 2*(clip_width-minkowski_rad),
+                buckle_height/2 - minkowski_height
+                    + 2*case_thickness + sf
+            ]);      
+        
+        cylinder(
+            r = minkowski_rad,
+            h = minkowski_height
+        );       
+    } 
+    
+    // Side 1
+    minkowski(){
+        translate([minkowski_rad, minkowski_rad, 0])
+            cube([
+                clip_length/2,
+                clip_width - 2*minkowski_rad,
+                buckle_height - minkowski_height
+                    + 2*case_thickness + sf
+            ]);
+        
+        cylinder(
+            r = minkowski_rad,
+            h = minkowski_height
+        );
+    } 
+    
+    // Side 2
+    minkowski(){
+        translate([
+            minkowski_rad,
+            buckle_width + clip_width + minkowski_rad,
+            0
+        ])
+            cube([
+                clip_length/2,
+                clip_width - 2*minkowski_rad,
+                buckle_height - minkowski_height
+                    + 2*case_thickness + sf
+            ]);
+        
+        cylinder(
+            r = minkowski_rad,
+            h = minkowski_height
+        );
+    } 
+    
+    // Base of clip and start of casing
+    minkowski(){
+        translate([
+            clip_length/2 + minkowski_rad,
+            minkowski_rad,
+            0
+        ])
+            cube([
+                clip_clasp_length - 2*minkowski_rad,
+                buckle_width + 2*(clip_width-minkowski_rad),
+                buckle_height - minkowski_height
+                    + 2*case_thickness + sf
+            ]);
+        
+        cylinder(
+            r = minkowski_rad,
+            h = minkowski_height
+        );
+    } 
+}
+
+
+module female_casing(){
+    
+    // Bottom
+    translate([
+        clip_length/2 + 2*minkowski_rad,
+        0,
+        0
+    ])
+        cube([
+            prong_length * wiggle_room_factor,
+            buckle_width + 2*clip_width,
+            case_thickness
+        ]);
+    
+    // Top
+    translate([
+        clip_length/2 + 2*minkowski_rad,
+        0,
+        buckle_height + case_thickness + sf
+    ])
+        cube([
+            prong_length * wiggle_room_factor,
+            buckle_width + 2*clip_width,
+            case_thickness
+        ]);
+    
+    // Side 1
+    difference(){
+        translate([
+            clip_length/2,
+            0,
+            0
+        ])
+            cube([
+                prong_length * wiggle_room_factor
+                    + 2*minkowski_rad,
+                case_thickness,
+                buckle_height + 2*case_thickness + sf
+            ]);        
+        
+        translate([
+            lock_length + clip_length/2,
+            -sf/2,
+            (buckle_height+sf)/6
+        ])
+            cube([
+                lock_length + lock_offset,
+                case_thickness + sf,
+                buckle_height + sf
+            ]); 
+    }        
+    
+    // Side 2
+    difference(){
+        translate([
+            clip_length/2,
+            buckle_width + 2*(clip_width-minkowski_rad)
+                + 2*sf,
+            0
+        ])
+            cube([
+                prong_length * wiggle_room_factor
+                    + 2*minkowski_rad,
+                case_thickness,
+                buckle_height + 2*case_thickness + sf
+            ]);
+        
+        translate([
+            lock_length + clip_length/2,
+            buckle_width + 2*(clip_width-minkowski_rad)
+                + 2*sf - sf/2,
+            (buckle_height+sf)/6
+        ])
+            cube([
+                lock_length + lock_offset,
+                case_thickness + sf,
+                buckle_height + sf
+            ]);        
+    }   
+    
+    // Center prong tracks
+    center = buckle_width
+        + 2*(clip_width-minkowski_rad)
+        + 2*sf;
+    
+    top_track_ref = buckle_height
+        + case_thickness
+        - track_height/2;
+    
+    translate([
+        clip_length/2,
+        (center+prong_center_width)/2 + track_thickness,
+        case_thickness
+    ])
+        cube([
+            prong_length * wiggle_room_factor
+                + 2*minkowski_rad,
+            track_thickness,
+            track_height
+        ]);
+    
+    translate([
+        clip_length/2,
+        (center-prong_center_width)/2 - track_thickness,
+        case_thickness
+    ])
+        cube([
+            prong_length * wiggle_room_factor
+                + 2*minkowski_rad,
+            track_thickness,
+            track_height
+        ]);
+    
+    translate([
+        clip_length/2,
+        (center+prong_center_width)/2 + track_thickness,
+        top_track_ref
+    ])
+        cube([
+            prong_length * wiggle_room_factor
+                + 2*minkowski_rad,
+            track_thickness,
+            track_height
+        ]);
+    
+    translate([
+        clip_length/2,
+        (center-prong_center_width)/2 - track_thickness,
+        top_track_ref
+    ])
+        cube([
+            prong_length * wiggle_room_factor
+                + 2*minkowski_rad,
+            track_thickness,
+            track_height
+        ]);
+}
+
+
 // ============================================================
-// Two Side Prongs + Locking Mechanisms
+// Male
 // ============================================================
 
-module male_prongs() {
+module male_buckle(){
+    
+    union(){
+        male_clip();
+        male_prongs();
+    }    
+}
 
-    // Lower/left prong
+
+// ============================================================
+// Male Clip
+// ============================================================
+
+module male_clip(){
+    
+    // ========================================================
+    // BACK REMOVED
+    // ========================================================
+    //
+    // The original back/strap attachment geometry was here:
+    //
+    // minkowski(){
+    //     translate([minkowski_rad, minkowski_rad, 0])
+    //         cube([
+    //             clip_clasp_length-2*minkowski_rad,
+    //             buckle_width+2*(clip_width-minkowski_rad),
+    //             buckle_height-minkowski_height
+    //         ]);
+    //     cylinder(r=minkowski_rad, h=minkowski_height);
+    // }
+    //
+    // ========================================================
+
+
+    // Side 1
+    minkowski(){
+        translate([
+            minkowski_rad,
+            minkowski_rad,
+            0
+        ])
+            cube([
+                clip_length,
+                clip_width - 2*minkowski_rad,
+                buckle_height - minkowski_height
+            ]);
+        
+        cylinder(
+            r = minkowski_rad,
+            h = minkowski_height
+        );
+    }     
+    
+    
+    // Side 2
+    minkowski(){
+        translate([
+            minkowski_rad,
+            buckle_width + clip_width + minkowski_rad,
+            0
+        ])
+            cube([
+                clip_length,
+                clip_width - 2*minkowski_rad,
+                buckle_height - minkowski_height
+            ]);
+        
+        cylinder(
+            r = minkowski_rad,
+            h = minkowski_height
+        );
+    }    
+   
+    
+    // Center section
+    translate([
+        clip_length/2,
+        0,
+        0
+    ])
+        cube([
+            clip_clasp_length,
+            buckle_width + 2*clip_width,
+            buckle_height
+        ]);     
+    
+
+    // Base of clip and start of prongs
+    minkowski(){
+        translate([
+            clip_length + minkowski_rad,
+            minkowski_rad,
+            0
+        ])
+            cube([
+                clip_clasp_length - 2*minkowski_rad,
+                buckle_width + 2*(clip_width-minkowski_rad),
+                buckle_height - minkowski_height
+            ]);
+        
+        cylinder(
+            r = minkowski_rad,
+            h = minkowski_height
+        );
+    } 
+}
+
+
+// ============================================================
+// Male Prongs
+// ============================================================
+
+module male_prongs(){
+    
+    // Side 1: prong
     translate([
         clip_length + clip_clasp_length,
         prong_offset,
@@ -589,13 +985,14 @@ module male_prongs() {
             prong_length,
             prong_side_width,
             buckle_height
-        ]);
-
-    // Lower/left locking mechanism
-    locking_mechanism();
-
-
-    // Upper/right prong
+        ]);    
+    
+    
+    // Side 1: locking mechanism
+    locking_mechanism(); 
+    
+    
+    // Side 2: prong
     translate([
         clip_length + clip_clasp_length,
         buckle_width + 2*clip_width
@@ -608,8 +1005,9 @@ module male_prongs() {
             prong_side_width,
             buckle_height
         ]);
-
-    // Upper/right locking mechanism
+    
+    
+    // Side 2: locking mechanism
     translate([
         0,
         buckle_width + 2*clip_width,
@@ -617,19 +1015,49 @@ module male_prongs() {
     ])
         mirror([0, 1, 0])
             locking_mechanism();
+    
+    
+    // Center prong
+    hull(){
+        translate([
+            clip_length + clip_clasp_length
+                - prong_center_tap,
+            (buckle_width-prong_center_width)/2
+                + clip_width,
+            0
+        ])
+            cube([
+                prong_length,
+                prong_center_width,
+                buckle_height
+            ]);
+        
+        translate([
+            clip_length + clip_clasp_length
+                + prong_length
+                - prong_center_tap,
+            buckle_width/2 + clip_width,
+            0
+        ])
+            cylinder(
+                r = prong_center_tap,
+                h = buckle_height
+            );        
+    }
 }
 
 
 // ============================================================
 // Locking Mechanism
 // ============================================================
-module locking_mechanism() {
 
+module locking_mechanism(){
+    
     vert_pos = prong_offset - 3;
-
-    hull() {
-
-        // Main angled locking section
+    
+    hull(){
+        
+        // Main locking section
         translate([
             buckle_length + clip_clasp_length - 11,
             vert_pos,
@@ -639,10 +1067,11 @@ module locking_mechanism() {
                 polygon(points = [
                     [0, 0],
                     [lock_length, 0],
-                    [lock_length + lock_offset, lock_width],
+                    [lock_length+lock_offset, lock_width],
                     [lock_offset, lock_width]
-                ]);
-
+                ]); 
+        
+        
         // Rounded end
         translate([
             buckle_length + clip_clasp_length,
@@ -652,8 +1081,9 @@ module locking_mechanism() {
             cylinder(
                 r = 2,
                 h = buckle_height
-            );
-
+            ); 
+        
+        
         // Rounded transition
         translate([
             buckle_length + clip_clasp_length,
@@ -661,40 +1091,28 @@ module locking_mechanism() {
             0
         ])
             rotate([0, 0, 60])
-                scale([1, 0.5])
-                    linear_extrude(height = buckle_height)
+                scale([1, 0.5])                 
+                    linear_extrude(
+                        height = buckle_height
+                    )
                         circle(d = 6);
     }
 }
-
-translate([
-    (buckle_length/2)-clip_length,
-    -(buckle_width + 2*clip_width)/2,
-    81.5
-])
-    male_buckle();
-
 // ============================================================
-// Buckle clip slot
+// Male buckle mounted to top end plate
 // ============================================================
-module buckle_clip_slot(
-    length = lock_length+.5,
-    width = buckle_width + 2*clip_width,
-    height = buckle_height + .5
-) {
 
-    translate([(buckle_length),
-        -(buckle_width + 2*clip_width)/2,
-        +1
-    ])
-        cube([
-            length,
-            width,
-            height
-        ]);
-}
 module render() {
     if (RENDER) { 
+        if (RENDER_MALE_BUCKLE)
+            translate([200,0,0])
+            male_buckle();
+        
+        if (RENDER_FEMALE_BUCKLE)
+            rotate([0,0,180])
+            translate([-275,-38,0])
+            female_buckle();
+       
 
         if (RENDER_BOTTOM) {
                 // Bottom cap
@@ -708,11 +1126,12 @@ module render() {
             generic_component(50);
         }
 
-//        // Second component
-//        translate([0,0,50])
-//        color("green")
-//        generic_component(30);
-
+        if (RENDER_SECOND) {
+         // Second component
+          translate([35,0,50])
+          color("green")
+          generic_component(30);
+        }
         
         if (RENDER_TOP) {
             // Top cap
