@@ -1048,11 +1048,11 @@ cube([
     depth_mm - 2*wall_mm,
     height_mm - 2*wall_mm
 ]);
-    translate([3.5,depth_mm/2,17])
-    scale([7.5, 3,10]) 
+    translate([3.5,depth_mm/2,18])
+    scale([7.5, 3,11]) 
     circle(r = 1, $fn = 100);
-    translate([3.5,-depth_mm/2,17])
-    scale([7.5, 3,10]) 
+    translate([3.5,-depth_mm/2,18])
+    scale([7.5, 3,11]) 
     circle(r = 1, $fn = 100);    
     }
 }
