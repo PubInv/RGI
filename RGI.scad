@@ -411,10 +411,11 @@ module horizontal_bottom_chamfer(
 module top_end_plate(
     cap_height = dt_height + cap_margin_mm + buckle_height+case_thickness) {
 
-    difference() {
+    
+        difference() {
 
         intersection() {
-
+            translate([-prong_length,0,0])
             vertical_corner_chamfer(
                 width_mm,
                 depth_mm,
@@ -439,7 +440,7 @@ module top_end_plate(
             wall_mm
         ])
         cube([
-            width_mm - 2*wall_mm,
+            width_mm -prong_length- 2*wall_mm,
             depth_mm - 2*wall_mm,
             cap_height - 2*wall_mm
         ]);
@@ -450,10 +451,6 @@ module top_end_plate(
             dt_width,
             dt_narrow_width);
         
-        translate([(width_mm/2)-prong_length,-depth_mm/2-1,-1])
-        
-        cube([(prong_length+1),depth_mm+2,buckle_height+case_thickness+dt_height+ cap_margin_mm+1]);
-
       
     }
     translate([prong_length/2,-(buckle_width/2)-clip_width,dt_height + cap_margin_mm])
