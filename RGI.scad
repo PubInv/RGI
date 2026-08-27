@@ -74,7 +74,12 @@ USE_RENDER_KNIFE = 0;
  
 heightx= 100;
 
+// TODO for James
+module bottom_plate(dt_width,height,dt_height) {
+// Recompute needed numbers for BOSL from these parameters.
 
+}
+// Top plate fits into the socket of the bottom plate
 module top_plate(dt_width,height,dt_height) { 
 echo("height",height);
 echo("dt_width",dt_width);
