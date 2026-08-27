@@ -1,8 +1,15 @@
+include <BOSL2/std.scad>
+include <BOSL2/joiners.scad>
+
 // Put Affero License here
-// TODO FOR JAHNAVI:
-// 1. Fix the narrowness in the wall thickness
-// 2. Add a slot on top where the mail dovetail is.
-// 3. Make all the dovetail consistently resizable (make sure it all fits)
+
+height= 100;
+dt_width = 15;
+dt_height = 8;
+dt_knife_width= 11;
+
+
+
 
 // TODO:
 // 1) Add Licence premable
@@ -20,16 +27,16 @@
 // Initial size configuration
 //maths
 wall_mm = 2; //thickness = distance
-dt_height = 8; //height = CE; 
-dt_width = 16; //shoulder_width = AB; 
+
+// dt_height = 8; //height = CE; 
+// dt_width = 16; //shoulder_width = AB; 
 dt_narrow_width = 10; //neck_width = CD; 
 shoulder_leftover = (dt_width - dt_narrow_width)/2; 
 //for left and right 
 cheek_length = sqrt(shoulder_leftover*shoulder_leftover +dt_height*dt_height);
 theta= atan(dt_height/ shoulder_leftover);
 
-function coordinates(wall_mm,dt_height,dt_width, dt_narrow_width)= 
-let(A = [-dt_width/2, dt_height],B = [ dt_width/2, dt_height],C = [-dt_narrow_width/2, 0],D = [ dt_narrow_width/2, 0],
+function coordinates(wall_mm,dt_height,dt_width, dt_narrow_width) = let(A = [-dt_width/2, dt_height],B = [ dt_width/2, dt_height],C = [-dt_narrow_width/2, 0],D = [ dt_narrow_width/2, 0],
  shoulder_leftover = (dt_width - dt_narrow_width)/2,
  theta= atan(dt_height/ shoulder_leftover),
  x = wall_mm/ tan(theta),
@@ -41,8 +48,9 @@ A_offset = [A[0] + wall_mm + x, A[1] - wall_mm],
 B_offset = [B[0] + -(wall_mm+x),B[1] - wall_mm],
 C_offset = [C[0] + wall_mm, C[1] ],
 D_offset = [D[0] + -wall_mm,D[1] ]
-) // TODO: Change naming of points to match traveling around a polygon
+)
 [A, B, C, D, A_offset,B_offset, C_offset, D_offset];
+
 
 depth_mm = 50;
 width_mm = 140;
@@ -63,6 +71,31 @@ RENDER_SECOND = 1;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
 USE_RENDER_KNIFE = 0;
+ 
+heightx= 100;
+
+
+module top_plate(dt_width,height,dt_height) { 
+echo("height",height);
+echo("dt_width",dt_width);
+translate([0,-wall_mm/2,0])
+diff()
+  cuboid([50,wall_mm,height]){
+    attach(BACK) dovetail("male", slide=height, width=dt_width, height=dt_height, angle=30);
+    tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=height, width=dt_knife_width, height=dt_height-1.5, angle=30);
+  }
+}
+  
+module cut_top_plate() {
+    slit_width = 4;
+    slit_margin = 20;
+    difference() {
+        top_plate(dt_width,height,dt_height);
+        cube([slit_width,50,height-slit_margin*2],center = true);
+    }
+}
+
+cut_top_plate();
 
 
 module test_coordinates() { 
@@ -89,7 +122,7 @@ module test_coordinates() {
     polygon([Ap,Bp,Dp,Cp]);
 }
 
-module dovetail(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_width) {
+module pi_dovetail(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_width) {
     y = dt_w;
     y_in = dt_n_w;
     z = dt_h;
@@ -138,6 +171,7 @@ module dove_tail_shell(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_widt
         female_dovetail_knife(dt_h,dt_w,dt_n_w);
     }
 }
+
 
 // Used under Creative-Commons BY-SA from You Magazine by "amcmichael"
 // https://youmagine.com/amcmichael
@@ -1122,6 +1156,7 @@ module generic_component (height_mm) {
             height_mm - 2*wall_mm
         ]);
 
+        // TODO: Change to the BOSL library
         // Female dovetail socket
         female_dovetail_knife(
             dt_height,
@@ -1130,8 +1165,12 @@ module generic_component (height_mm) {
         );
     }
 
+    // TODO: Change to BOSL library
     // Female dovetail shell
-    dove_tail_shell(dt_height);
+    // dove_tail_shell(dt_height);
+    #translate([0,0,height_mm])
+    rotate([90,0,90])
+    cut_top_plate();
 
     // Male dovetail on top
     translate([0,0,height_mm])
