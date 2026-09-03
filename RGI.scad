@@ -75,9 +75,20 @@ USE_RENDER_KNIFE = 0;
 heightx= 100;
 
 // TODO for James
-module bottom_plate(dt_width,height,dt_height) {
-// Recompute needed numbers for BOSL from these parameters.
+module bottom_plate(dt_width, height, dt_height) {
 
+    cuboid([50, wall_mm, 120]) {
+        tag("remove")
+            attach(FRONT)
+                dovetail(
+                    "female",
+                    slide = 120,
+                    width = dt_width,
+                    height = dt_height,
+                    angle = 30,
+                    $slop = dovetial_margin_mm
+                );
+    }
 }
 // Top plate fits into the socket of the bottom plate
 module top_plate(dt_width,height,dt_height) { 
@@ -1036,11 +1047,11 @@ translate([(-prong_length-clip_clasp_length)/2,0,0])
         ]);
 
         // Female dovetail
-        female_dovetail_knife(
-            dt_height,
-            dt_width,
-            dt_narrow_width
-        );
+        //female_dovetail_knife(
+            //dt_height,
+           // dt_width,
+           // dt_narrow_width
+        //);
     }
 
     // Male buckle
@@ -1163,32 +1174,31 @@ module generic_component (height_mm) {
 
         // TODO: Change to the BOSL library
         // Female dovetail socket
-        female_dovetail_knife(
-            dt_height,
-            dt_width,
-            dt_narrow_width
-        );
+        //female_dovetail_knife(
+           // dt_height,
+           // dt_width,
+          //  dt_narrow_width
+       // );
+     translate([0,0,0])
+    rotate([0,0,0])
+        bottom_plate(
+        dt_width,
+        height_mm,
+        dt_height
+    );
     }
 
     // TODO: Change to BOSL library
     // Female dovetail shell
     // dove_tail_shell(dt_height);
-    #translate([0,0,height_mm])
+    
+    //male BOSL dovetail
+    translate([-12,0,height_mm])
     rotate([90,0,90])
     cut_top_plate();
 
-    // Male dovetail on top
-    translate([0,0,height_mm])
-        dove_tail_shell(
-            dt_height+1,
-            dt_width+1,
-            dt_narrow_width+1
-        );
     translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,0,height_mm])
         generic_female_buckle(24);
-   // rotate([0,0,180])
-    //translate([(-width_mm/2),(-buckle_width/2)-clip_width,30+dt_height+case_thickness/1.5])
-       // female_buckle();
 }
 
 module render() {
@@ -1250,3 +1260,8 @@ if (USE_RENDER_KNIFE) {
 } else {
     render();
 }
+bottom_plate(
+        dt_width,
+        height,
+        dt_height
+    );
