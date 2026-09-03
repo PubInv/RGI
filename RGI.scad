@@ -55,7 +55,7 @@ D_offset = [D[0] + -wall_mm,D[1] ]
 depth_mm = 50;
 width_mm = 140;
 
-dovetial_margin_mm = 0.5; // this is the tolerance gap between the tail and cado
+dovetail_margin_mm = 0.5; // this is the tolerance gap between the tail and cado
 knife_margin_mm = 0.01;
 cap_margin_mm = 4;
 corner_radius_mm = 2;
@@ -75,9 +75,9 @@ USE_RENDER_KNIFE = 0;
 heightx= 100;
 
 // TODO for James
-module bottom_plate(dt_width, height, dt_height) {
+module BOSL2_socket(dt_width, height, dt_height) {
 
-    cuboid([50, wall_mm, 120]) {
+    cuboid([0, 0, 0]) {
         tag("remove")
             attach(FRONT)
                 dovetail(
@@ -86,8 +86,27 @@ module bottom_plate(dt_width, height, dt_height) {
                     width = dt_width,
                     height = dt_height,
                     angle = 30,
-                    $slop = 2*dovetial_margin_mm
+                    $slop = dovetail_margin_mm
                 );
+    }
+}
+
+module bottom_plate(dt_width, height, dt_height) {
+
+    translate([0, -wall_mm/2,-10])
+    diff()
+  cuboid([0,0,0]){
+    attach(BACK) dovetail("male", slide=120, width=dt_width, height=dt_height, angle=30, $slop=dovetail_margin_mm);
+    tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=120, width=dt_knife_width, height=dt_height-1.5, angle=30, $slop=dovetail_margin_mm);
+  }
+}
+
+module cut_bottom_plate() {
+    slit_width = 4;
+    slit_margin = 20;
+    difference() {
+        bottom_plate(dt_width,height,dt_height);
+        cube([slit_width,50,height-slit_margin*2],center = true);
     }
 }
 // Top plate fits into the socket of the bottom plate
@@ -151,9 +170,9 @@ module pi_dovetail(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_width) {
 
 module female_dovetail_knife(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_width) {
 
-    y = dt_w + dovetial_margin_mm;
-    y_in = dt_n_w + dovetial_margin_mm;
-    z = dt_h + dovetial_margin_mm;
+    y = dt_w + dovetail_margin_mm;
+    y_in = dt_n_w + dovetail_margin_mm;
+    z = dt_h + dovetail_margin_mm;
 
     points = [
         [0-knife_margin_mm, y_in],
@@ -1045,20 +1064,21 @@ translate([(-prong_length-clip_clasp_length)/2,0,0])
             depth_mm - 2*wall_mm,
             cap_height - 2*wall_mm
         ]);
-        translate([-10,0,-wall_mm/2])
+        translate([-10,0,0])
         rotate([90,0,90])
-            bottom_plate(
+            BOSL2_socket(
             dt_width,
-            height_mm,
+            height,
             dt_height
-    );
-        // Female dovetail
-        //female_dovetail_knife(
-            //dt_height,
-           // dt_width,
-           // dt_narrow_width
-        //);
+        );
     }
+        translate([0,0,wall_mm/2])
+        rotate([90,0,90])
+            cut_bottom_plate(
+            dt_width,
+            height,
+            dt_height
+        );
 
     // Male buckle
     translate([
@@ -1187,16 +1207,19 @@ module generic_component (height_mm) {
        // );
      translate([-10,0,-wall_mm/2])
     rotate([90,0,90])
-        bottom_plate(
+        BOSL2_socket(
         dt_width,
         height_mm,
         dt_height
     );
     }
-
-    // TODO: Change to BOSL library
-    // Female dovetail shell
-    // dove_tail_shell(dt_height);
+    translate([-10,0,0])
+    rotate([90,0,90])
+    cut_bottom_plate(
+    dt_width,
+    height_mm,
+    dt_height
+);
     
     //male BOSL dovetail
     translate([-12,0,height_mm])
@@ -1266,8 +1289,3 @@ if (USE_RENDER_KNIFE) {
 } else {
     render();
 }
-bottom_plate(
-        dt_width,
-        height,
-        dt_height
-    );
