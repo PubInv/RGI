@@ -66,7 +66,7 @@ RENDER = 1;
 RENDER_BOTTOM = 0;
 RENDER_TOP = 1;
 RENDER_FIT_TEST = 1;
-RENDER_FIRST = 0;
+RENDER_FIRST = 1;
 RENDER_SECOND = 1;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
@@ -1089,16 +1089,17 @@ module generic_female_buckle(height_mm) {
         }
         
    // Interior cavity + open negative-X wall
-translate([
-    -buckle_case_length/2,
-    -depth_mm/2 + wall_mm,
-    wall_mm
-])
-cube([
-    buckle_case_length - wall_mm,
-    depth_mm - 2*wall_mm,
-    height_mm - 2*wall_mm
-]);
+        translate([
+        -buckle_case_length/2,
+        -depth_mm/2 + wall_mm,
+        wall_mm
+        ])
+        cube([
+        buckle_case_length - wall_mm,
+        depth_mm - 2*wall_mm,
+        height_mm - 2*wall_mm
+        ]);
+        
     translate([3.75,depth_mm/2,18])
     scale([7.5, 4,11.5]) 
     circle(r = 1, $fn = 100);
@@ -1150,7 +1151,11 @@ module blank_face_plate() {
 
 
 module generic_component (height_mm) {
-
+    
+    buckle_case_length = prong_length + clip_clasp_length;
+    
+    cap_height = dt_height + cap_margin_mm + buckle_height + case_thickness;
+    
     difference() {
 
         // Main body with chamfered vertical outside corners
@@ -1165,6 +1170,10 @@ module generic_component (height_mm) {
         translate([-width_mm/2 + wall_mm, -         depth_mm/2 + wall_mm,wall_mm])
         cube([width_mm - 2*wall_mm, depth_mm - 2*       wall_mm, height_mm - 2*wall_mm]);
 
+        // recess for male buckle
+         translate([width_mm/2-buckle_case_length,-25,0])
+        
+         cube([buckle_case_length,depth_mm,cap_height]);
         
         // Female dovetail socket
         //female_dovetail_knife(
@@ -1192,6 +1201,13 @@ module generic_component (height_mm) {
     //Female Buckle
     translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,0,height_mm])
         generic_female_buckle(24);
+    
+    // Male buckle
+    translate([prong_length/2 - clip_clasp_length,
+        -(buckle_width/2) - clip_width,
+        dt_height + cap_margin_mm])
+    
+    male_buckle();
 }
 
 module render() {
@@ -1214,6 +1230,7 @@ module render() {
 
         if (RENDER_FIRST) {
             // First component
+            translate([35,0,0])
             color("blue")
             generic_component(50);
         }
