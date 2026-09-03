@@ -95,8 +95,8 @@ module bottom_plate(dt_width, height, dt_height) {
     translate([0,0,0])
     diff()
   cuboid([0,0,0]){
-    attach(BACK) dovetail("male", slide=120, width=dt_width+2*wall_mm, height=dt_height+wall_mm/2, angle=30);
-    tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=121, width=dt_width, height=dt_height, angle=30, $slop=dovetail_margin_mm);
+    attach(BACK) dovetail("male", slide=110, width=dt_width+2*wall_mm, height=dt_height+wall_mm/2, angle=30);
+    tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=111, width=dt_width, height=dt_height, angle=30, $slop=dovetail_margin_mm);
   }
 }
 
@@ -244,7 +244,7 @@ prong_offset       = 3; // difference between prong location and overall buckle 
 
 lock_length = 10;
 lock_width  = 5;
-lock_offset = 2; // the latching angle (decrease for smaller locking angle)
+lock_offset = 1.5; // the latching angle (decrease for smaller locking angle)
 
 
 // ============================================================
@@ -1035,52 +1035,32 @@ module top_end_plate(
 translate([(-prong_length-clip_clasp_length)/2,0,0])
         intersection() {
 
-            vertical_corner_chamfer(
-                top_plate_length,
-                depth_mm,
-                cap_height,
-                corner_radius_mm,
-                fillet_fn
-            );
+        vertical_corner_chamfer(top_plate_length,       depth_mm, cap_height, corner_radius_mm      , fillet_fn);
 
-            horizontal_top_chamfer(
-                top_plate_length,
-                depth_mm,
-                cap_height,
-                horizontal_radius_mm,
-                fillet_fn
-            );
+        horizontal_top_chamfer( top_plate_length,       depth_mm, cap_height,                      horizontal_radius_mm,                       fillet_fn);
         }
 
         // Interior cavity
-        translate([
-            -top_plate_length/2 + wall_mm,
-            -depth_mm/2 + wall_mm,
-            wall_mm
-        ])
-        cube([
-            top_plate_length - 2*wall_mm,
-            depth_mm - 2*wall_mm,
-            cap_height - 2*wall_mm
-        ]);
+        translate([-top_plate_length/2 + wall_mm,
+        -depth_mm/2 + wall_mm, wall_mm])
+        
+        cube([top_plate_length - 2*wall_mm,
+            depth_mm - 2*wall_mm, cap_height - 2*           wall_mm]);
+        
         translate([-10,0,0])
         rotate([90,0,90])
-            BOSL2_socket(
-            dt_width,
-            height,
-            dt_height
-        );
+            BOSL2_socket(dt_width, height,                      dt_height);
     }
-        translate([-10,0,0])
+    
+        translate([-15,0,0])
         rotate([90,0,90])
             cut_bottom_plate();
 
     // Male buckle
-    translate([
-        prong_length/2 - clip_clasp_length,
+    translate([prong_length/2 - clip_clasp_length,
         -(buckle_width/2) - clip_width,
-        dt_height + cap_margin_mm
-    ])
+        dt_height + cap_margin_mm])
+    
     male_buckle();
 }
 module generic_female_buckle(height_mm) {
@@ -1119,11 +1099,11 @@ cube([
     depth_mm - 2*wall_mm,
     height_mm - 2*wall_mm
 ]);
-    translate([3.5,depth_mm/2,18])
-    scale([7.5, 3,11]) 
+    translate([3.75,depth_mm/2,18])
+    scale([7.5, 4,11.5]) 
     circle(r = 1, $fn = 100);
-    translate([3.5,-depth_mm/2,18])
-    scale([7.5, 3,11]) 
+    translate([3.75,-depth_mm/2,18])
+    scale([7, 4,11.5]) 
     circle(r = 1, $fn = 100);    
     }
 }
@@ -1182,33 +1162,25 @@ module generic_component (height_mm) {
         );
 
         // Interior cavity
-        translate([
-            -width_mm/2 + wall_mm,
-            -depth_mm/2 + wall_mm,
-            wall_mm
-        ])
-        cube([
-            width_mm - 2*wall_mm,
-            depth_mm - 2*wall_mm,
-            height_mm - 2*wall_mm
-        ]);
+        translate([-width_mm/2 + wall_mm, -         depth_mm/2 + wall_mm,wall_mm])
+        cube([width_mm - 2*wall_mm, depth_mm - 2*       wall_mm, height_mm - 2*wall_mm]);
 
-        // TODO: Change to the BOSL library
+        
         // Female dovetail socket
         //female_dovetail_knife(
            // dt_height,
            // dt_width,
           //  dt_narrow_width
        // );
-     translate([-10,0,0])
+        
+        //BOSL2 Socket
+     translate([-15,0,0])
     rotate([90,0,90])
-        BOSL2_socket(
-        dt_width,
-        height_mm,
-        dt_height
-    );
+        BOSL2_socket(dt_width, height_mm, dt_height);
     }
-    translate([-10,0,0])
+    
+    //Female BOSL2 Dovetail shell
+    translate([-15,0,0])
     rotate([90,0,90])
     cut_bottom_plate();
     
@@ -1216,7 +1188,8 @@ module generic_component (height_mm) {
     translate([-15,0,height_mm])
     rotate([90,0,90])
     cut_top_plate();
-
+    
+    //Female Buckle
     translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,0,height_mm])
         generic_female_buckle(24);
 }
@@ -1255,7 +1228,7 @@ module render() {
         
         if (RENDER_TOP) {
             // Top cap
-            translate([-35,0,50+30])
+            translate([0,0,50+30])
             color("gray")
             top_end_plate();
         }
