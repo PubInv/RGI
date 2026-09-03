@@ -86,7 +86,7 @@ module bottom_plate(dt_width, height, dt_height) {
                     width = dt_width,
                     height = dt_height,
                     angle = 30,
-                    $slop = dovetial_margin_mm
+                    $slop = 2*dovetial_margin_mm
                 );
     }
 }
@@ -1045,7 +1045,13 @@ translate([(-prong_length-clip_clasp_length)/2,0,0])
             depth_mm - 2*wall_mm,
             cap_height - 2*wall_mm
         ]);
-
+        translate([-10,0,-wall_mm/2])
+        rotate([90,0,90])
+            bottom_plate(
+            dt_width,
+            height_mm,
+            dt_height
+    );
         // Female dovetail
         //female_dovetail_knife(
             //dt_height,
@@ -1179,8 +1185,8 @@ module generic_component (height_mm) {
            // dt_width,
           //  dt_narrow_width
        // );
-     translate([0,0,0])
-    rotate([0,0,0])
+     translate([-10,0,-wall_mm/2])
+    rotate([90,0,90])
         bottom_plate(
         dt_width,
         height_mm,
