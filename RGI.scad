@@ -80,13 +80,13 @@ fillet_fn = 64;
 
 RENDER = 1;
 RENDER_BOTTOM = 0;
-RENDER_TOP = 1;
-RENDER_FIT_TEST = 1;
+RENDER_TOP = 0;
+RENDER_FIT_TEST = 0;
 RENDER_FIRST = 1;
 RENDER_SECOND = 1;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
-USE_RENDER_KNIFE = 0;
+USE_RENDER_KNIFE = 1;
  
 heightx= 100;
 
@@ -145,82 +145,6 @@ module cut_top_plate() {
     }
 }
 
-cut_top_plate();
-
-
-module test_coordinates() { 
-    values = 
-        coordinates(wall_mm,dt_height,dt_width, dt_narrow_width);
-    A = values[0];
-    B = values[1];
-    C = values[2];
-    D = values[3];
-    Ap = values[4];
-    Bp = values[5];
-    Cp = values[6];
-    Dp = values[7];
-    // , B, C, D, A_offset,B_offset, C_offset, D_offset]
-    echo("Test Values");
-   echo(A); 
-   
-   color("red")
-   linear_extrude(height=1,center=true)
-   polygon([A,B,D,C]);
-    translate([0,0,2])
-    color("green")
-    linear_extrude(height=1,center=true)
-    polygon([Ap,Bp,Dp,Cp]);
-}
-
-module pi_dovetail(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_width) {
-    y = dt_w;
-    y_in = dt_n_w;
-    z = dt_h;
-    points = [[0,y_in],[z,y],[z,-y],[0,-y_in]];
-    rotate([0,-90,0])
-    linear_extrude(height = width_mm,center = true)
-    polygon(points);
-}
-
-
-module female_dovetail_knife(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_width) {
-
-    y = dt_w + dovetail_margin_mm;
-    y_in = dt_n_w + dovetail_margin_mm;
-    z = dt_h + dovetail_margin_mm;
-
-    points = [
-        [0-knife_margin_mm, y_in],
-        [z, y],
-        [z,-y],
-        [0-knife_margin_mm,-y_in]
-    ];
-
-    rotate([0,-90,0])
-        linear_extrude(height = width_mm + 2, center = true)
-            polygon(points);
-}
-
-module dove_tail_shell(dt_h = dt_height,dt_w = dt_width, dt_n_w = dt_narrow_width) {
-    y = dt_w + wall_mm;
-    y_in = dt_n_w + wall_mm;
-    z = dt_h + wall_mm;
-
-    points = [
-       [0, y_in],
-       [z, y],
-       [z,-y],
-       [0,-y_in]
-    ];
-    translate([-prong_length/2,0,0])
-    rotate([0,-90,0])
-    difference() {
-        linear_extrude(height = width_mm-prong_length-clip_clasp_length, center = true)
-        polygon(points);
-        rotate([0,90,0])
-        female_dovetail_knife(dt_h,dt_w,dt_n_w);
-    }
-}
 
 
 // Used under Creative-Commons BY-SA from You Magazine by "amcmichael"
@@ -1280,7 +1204,7 @@ module render() {
 if (USE_RENDER_KNIFE) {
     difference() {
         render();
-        translate([300/2,0,0])
+        translate([0,300/2,0])
         cube([300,300,300],center=true);
     }
 } else {
