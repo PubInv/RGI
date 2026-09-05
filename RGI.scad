@@ -20,9 +20,9 @@ include <BOSL2/joiners.scad>
 //    http://www.gnu.org/licenses/.
 
 height= 100;
-dt_width = 15;
+dt_width = 20;
 dt_height = 8;
-dt_knife_width= 11;
+dt_knife_width= 15;
 
 
 
@@ -132,7 +132,7 @@ translate([0,0,0])
 diff()
   cuboid([0,0,0]){
     attach(BACK) dovetail("male", slide=110, width=dt_width, height=dt_height, angle=30);
-    tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=120, width=dt_knife_width/2.4, height=(dt_height-1.5)-2.6, angle=30);
+    tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=120, width=dt_knife_width/1.8, height=(dt_height-1.5)-1, angle=30);
   }
 }
   
@@ -1113,6 +1113,12 @@ module generic_component (height_mm) {
             height_mm,
             2
         );
+        
+        slit_width = 4;
+        slit_margin = 20;
+        translate([-50/2+10,0,height/2])
+        rotate([90,0,90])
+        cube([slit_width,50,height-slit_margin*2],center = true);
 
         // Interior cavity
         translate([-width_mm/2 + wall_mm, -         depth_mm/2 + wall_mm,wall_mm])
@@ -1144,16 +1150,21 @@ module generic_component (height_mm) {
     //male BOSL dovetail
     translate([-15,0,height_mm])
     rotate([90,0,90])
-    cut_top_plate();
+    difference() {
+        cut_top_plate();
+        slit_width = 4;
+        slit_margin = 20;
+        cube([slit_width,50,height-slit_margin*2],center = true);
+    }
     
     //Female Buckle
-    translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,0,height_mm])
+    translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,0,height_mm-1.5])
         generic_female_buckle(24);
     
     // Male buckle
     translate([prong_length/2 - clip_clasp_length,
         -(buckle_width/2) - clip_width,
-        dt_height + cap_margin_mm])
+        dt_height + cap_margin_mm-1])
     
     male_buckle();
 }
@@ -1178,6 +1189,7 @@ module render() {
 
         if (RENDER_FIRST) {
             // First component
+                     scale([0.5,0.5,0.5])
             translate([35,0,0])
             color("blue")
             generic_component(50);
