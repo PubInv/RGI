@@ -111,7 +111,7 @@ module bottom_plate(dt_width, height, dt_height) {
     translate([0,0,0])
     diff()
   cuboid([0,0,0]){
-    attach(BACK) dovetail("male", slide=110, width=dt_width+2*wall_mm, height=dt_height+wall_mm/2, angle=30);
+    attach(BACK) dovetail("male", slide=110, width=dt_width+6*wall_mm, height=dt_height+wall_mm*1.5, angle=30);
     tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=111, width=dt_width, height=dt_height, angle=30, $slop=dovetail_margin_mm);
   }
 }
@@ -132,7 +132,7 @@ translate([0,0,0])
 diff()
   cuboid([0,0,0]){
     attach(BACK) dovetail("male", slide=110, width=dt_width, height=dt_height, angle=30);
-    tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=120, width=dt_knife_width, height=dt_height-1.5, angle=30);
+    tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=120, width=dt_knife_width/2.4, height=(dt_height-1.5)-2.6, angle=30);
   }
 }
   
