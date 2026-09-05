@@ -82,11 +82,11 @@ RENDER = 1;
 RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 1;
+RENDER_FIRST = 0;
 RENDER_SECOND = 1;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
-USE_RENDER_KNIFE = 1;
+USE_RENDER_KNIFE = 0;
  
 heightx= 100;
 
@@ -163,7 +163,9 @@ clip_clasp_length = 5;
 // ============================================================
 
 buckle_width  = depth_mm-2*clip_width; // Buckle dimension based on the inner width of the strap connector
-buckle_height = 10;
+
+// TODO: Maybe define tolerance gaps here?
+buckle_height = 9;
 buckle_length = 50;
 
 
@@ -460,6 +462,9 @@ module female_casing(){
 // Male
 // ============================================================
 
+
+// TODO: Remove more of the clip to make more compact.
+// Remove center alignment prong
 module male_buckle(){
     
     union(){
@@ -1040,11 +1045,14 @@ module generic_female_buckle(height_mm) {
         height_mm - 2*wall_mm
         ]);
         
-    translate([3.75,depth_mm/2,18])
+    // TODO: Remove these "magic numbers"
+    translate([3.75,depth_mm/2,11])
     scale([7.5, 4,11.5]) 
+    linear_extrude(height =2)
     circle(r = 1, $fn = 100);
-    translate([3.75,-depth_mm/2,18])
+    translate([3.75,-depth_mm/2,11])
     scale([7, 4,11.5]) 
+    linear_extrude(height =2)
     circle(r = 1, $fn = 100);    
     }
 }
@@ -1177,6 +1185,7 @@ module render() {
 
         if (RENDER_SECOND) {
          // Second component
+         scale([0.5,0.5,0.5])
           translate([0,0,50])
           color("green")
           generic_component(30);
@@ -1200,6 +1209,7 @@ module render() {
 //        dove_tail_shell(dt_height+3);
     }
 }
+
 
 if (USE_RENDER_KNIFE) {
     difference() {
