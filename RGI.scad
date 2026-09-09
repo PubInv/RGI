@@ -90,7 +90,6 @@ USE_RENDER_KNIFE = 0;
  
 heightx= 100;
 
-// TODO for James
 module BOSL2_socket(dt_width, height, dt_height) {
 
     cuboid([0, 0, 0]) {
@@ -124,7 +123,7 @@ module cut_bottom_plate() {
         cube([slit_width,50,height-slit_margin*2],center = true);
     }
 }
-// Top plate fits into the socket of the bottom plate
+
 module top_plate(dt_width,height,dt_height) { 
 echo("height",height);
 echo("dt_width",dt_width);
@@ -500,56 +499,56 @@ module male_clip(){
 
 
     // Side 1
-    minkowski(){
-        translate([
-            minkowski_rad,
-            minkowski_rad,
-            0
-        ])
-            cube([
-                clip_length,
-                clip_width - 2*minkowski_rad,
-                buckle_height - minkowski_height
-            ]);
-        
-        cylinder(
-            r = minkowski_rad,
-            h = minkowski_height
-        );
-    }     
+//    minkowski(){
+//        translate([
+//            minkowski_rad,
+//            minkowski_rad,
+//            0
+//        ])
+//            cube([
+//                clip_length,
+//                clip_width - 2*minkowski_rad,
+//                buckle_height - minkowski_height
+//            ]);
+//        
+//        cylinder(
+//            r = minkowski_rad,
+//            h = minkowski_height
+//        );
+//    }     
     
     
     // Side 2
-    minkowski(){
-        translate([
-            minkowski_rad,
-            buckle_width + clip_width + minkowski_rad,
-            0
-        ])
-            cube([
-                clip_length,
-                clip_width - 2*minkowski_rad,
-                buckle_height - minkowski_height
-            ]);
-        
-        cylinder(
-            r = minkowski_rad,
-            h = minkowski_height
-        );
-    }    
-   
-    
+//    minkowski(){
+//        translate([
+//            minkowski_rad,
+//            buckle_width + clip_width + minkowski_rad,
+//            0
+//        ])
+//            cube([
+//                clip_length,
+//                clip_width - 2*minkowski_rad,
+//                buckle_height - minkowski_height
+//            ]);
+//        
+//        cylinder(
+//            r = minkowski_rad,
+//            h = minkowski_height
+//        );
+//    }    
+//   
+//    
     // Center section
-    translate([
-        clip_length/2,
-        0,
-        0
-    ])
-        cube([
-            clip_clasp_length,
-            buckle_width + 2*clip_width,
-            buckle_height
-        ]);     
+//    translate([
+//        clip_length/2,
+//        0,
+//        0
+//    ])
+//        cube([
+//            clip_clasp_length,
+//            buckle_width + 2*clip_width,
+//            buckle_height
+//        ]);     
     
 
     // Base of clip and start of prongs
@@ -622,32 +621,32 @@ module male_prongs(){
     
     
     // Center prong
-    hull(){
-        translate([
-            clip_length + clip_clasp_length
-                - prong_center_tap,
-            (buckle_width-prong_center_width)/2
-                + clip_width,
-            0
-        ])
-            cube([
-                prong_length,
-                prong_center_width,
-                buckle_height
-            ]);
-        
-        translate([
-            clip_length + clip_clasp_length
-                + prong_length
-                - prong_center_tap,
-            buckle_width/2 + clip_width,
-            0
-        ])
-            cylinder(
-                r = prong_center_tap,
-                h = buckle_height
-            );        
-    }
+//    hull(){
+//        translate([
+//            clip_length + clip_clasp_length
+//                - prong_center_tap,
+//            (buckle_width-prong_center_width)/2
+//                + clip_width,
+//            0
+//        ])
+//            cube([
+//                prong_length,
+//                prong_center_width,
+//                buckle_height
+//            ]);
+//        
+//        translate([
+//            clip_length + clip_clasp_length
+//                + prong_length
+//                - prong_center_tap,
+//            buckle_width/2 + clip_width,
+//            0
+//        ])
+//            cylinder(
+//                r = prong_center_tap,
+//                h = buckle_height
+//            );        
+//    }
 }
 
 
@@ -1129,13 +1128,7 @@ module generic_component (height_mm) {
         
          cube([buckle_case_length,depth_mm,cap_height]);
         
-        // Female dovetail socket
-        //female_dovetail_knife(
-           // dt_height,
-           // dt_width,
-          //  dt_narrow_width
-       // );
-        
+   
         //BOSL2 Socket
      translate([-15,0,0])
     rotate([90,0,90])
