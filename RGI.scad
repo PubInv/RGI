@@ -97,7 +97,7 @@ module BOSL2_socket(dt_width, height, dt_height) {
                     slide = width_mm,
                     width = dt_width+2*wall_mm,
                     height = dt_height+wall_mm/2,
-                    angle = dt_angle,
+                    angle = dt_angle
                 );
     }
 }
@@ -699,6 +699,11 @@ module bottom_end_plate() {
 //            dt_width,
 //            dt_narrow_width
 //        );
+        rotate([90,0,90])
+        cut_top_plate();
+        
+        translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,0,0])
+        generic_female_buckle(cap_height_mm);
     }
 }
 
@@ -787,6 +792,7 @@ module render() {
 
             if (RENDER_BOTTOM) {
                     // Bottom cap
+                translate([100,0,0])
                 color("gray")
                 bottom_end_plate();
             }
