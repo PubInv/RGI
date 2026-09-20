@@ -47,6 +47,7 @@ dt_height = 8;
 dt_knife_width= 15;
 dovetail_margin_mm = 0.5; // this is the tolerance gap between the tail and cado
 knife_margin_mm = 0.01;
+bottom_height = 6;
 
 // These concern chamfering
 cap_margin_mm = 4;
@@ -103,11 +104,9 @@ module BOSL2_socket(dt_width, height, dt_height) {
 }
 
 module component_shell(dt_width, height, dt_height) {
-
-    translate([0,0,0])
     diff()
   cuboid([0,0,0]){
-    attach(BACK) dovetail("male", slide=width_mm, width=dt_width+6*wall_mm, height=dt_height+wall_mm*1.5, angle=30);
+    attach(BACK) dovetail("male", slide=width_mm-wall_mm, width=dt_width+6*wall_mm, height=dt_height+wall_mm*1.5, angle=30);
     tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=width_mm+1, width=dt_width, height=dt_height, angle=30, $slop=dovetail_margin_mm);
   }
 }
@@ -123,7 +122,7 @@ module component_dovetail(dt_width,height,dt_height) {
     translate([0,0,0])
     diff()
       cuboid([0,0,0]){
-        attach(BACK) dovetail("male", slide=width_mm, width=dt_width, height=dt_height, angle=dt_angle);
+        attach(BACK) dovetail("male", slide=width_mm - wall_mm, width=dt_width, height=dt_height, angle=dt_angle);
         tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=width_mm, width=dt_knife_width/1.8, height=(dt_height-1.5)-1, angle=30);
       }
 }
@@ -549,14 +548,12 @@ module top_end_plate(
             depth_mm - 2*wall_mm, cap_height - 2*           wall_mm]);
      
   
-// TODO: What are these "magic numbers"  
-//       #translate([-10,0,0])
-//       #translate([-20,0,0])
-        rotate([90,0,90])
+
+         translate([-wall_mm/2,0,0])
+         rotate([90,0,90])
             BOSL2_socket(dt_width, height,                      dt_height);
     }
-    
-        
+        translate([-wall_mm/2,0,0])
         rotate([90,0,90])
             cut_component_shell();
 
@@ -571,17 +568,16 @@ module top_end_plate(
 
 module bottom_end_plate() {
 
-    cap_height = wall_mm;
     union() {
 
         // Rounded bottom cap body
-        translate([0,0,-cap_height])
+        translate([0,0,-bottom_height])
         intersection() {
 
             vertical_corner_chamfer(
                 width_mm,
                 depth_mm,
-                cap_height,
+                bottom_height,
                 corner_radius_mm,
                 fillet_fn
             );
@@ -589,19 +585,13 @@ module bottom_end_plate() {
             horizontal_bottom_chamfer(
                 width_mm,
                 depth_mm,
-                cap_height,
+                bottom_height,
                 corner_radius_mm,
                 fillet_fn
             );
         }
 
-        // Male dovetail
-        // TODO: Replace with proper call to BOSL library
-//        dovetail(
-//            dt_height,
-//            dt_width,
-//            dt_narrow_width
-//        );
+        translate([-wall_mm/2,0,0])
         rotate([90,0,90])
         cut_component_dovetail();
         
@@ -653,12 +643,12 @@ module generic_component (height_mm) {
     }
     
     //Female BOSL2 Dovetail shell
-    translate([0,0,0])
+    translate([-wall_mm/2,0,0])
     rotate([90,0,90])
     cut_component_shell();
     
     //male BOSL dovetail
-    translate([0,0,height_mm])
+    translate([-wall_mm/2,0,height_mm])
     rotate([90,0,90])
     difference() {
         cut_component_dovetail();
