@@ -363,48 +363,24 @@ module horizontal_top_chamfer(
             concat(
 
                 // Bottom-left
-                [
-                    [-size_x/2, 0]
-                ],
-
+                [[-size_x/2, 0]],
                 // Bottom-right
-                [
-                    [size_x/2, 0]
-                ],
-
+                [[size_x/2, 0]],
                 // Right vertical wall
-                [
-                    [size_x/2, size_z-radius]
-                ],
-
+                [[size_x/2, size_z-radius]],
                 // Right top quarter-circle
-                [
-                    for (i = [0:fn/4])
-                        [
-                            size_x/2-radius
-                                + radius*cos(i*90/(fn/4)),
-                            size_z-radius
-                                + radius*sin(i*90/(fn/4))
-                        ]
+                [for (i = [0:fn/4])
+                    [size_x/2-radius + radius*cos(                i*90/(fn/4)), size_z-radius +                radius*sin(i*90/(fn/4))]
                 ],
-
                 // Top
-                [
-                    [-size_x/2+radius, size_z]
-                ],
+                [[-size_x/2+radius, size_z]],
 
                 // Left top quarter-circle
-                [
-                    for (i = [0:fn/4])
-                        [
-                            -size_x/2+radius
-                                - radius*sin(i*90/(fn/4)),
-                            size_z-radius
-                                + radius*cos(i*90/(fn/4))
-                        ]
+                [for (i = [0:fn/4])
+                        [-size_x/2+radius - radius                    *sin(i*90/(fn/4)), size_z-                    radius + radius*cos(i*90/(                    fn/4))]
                 ]
-            )
-        );
+                )
+            );
 
         rotate([90,0,90])
         linear_extrude(
@@ -413,47 +389,22 @@ module horizontal_top_chamfer(
         )
         polygon(
             concat(
-
                 // Bottom-left
-                [
-                    [-size_y/2, 0]
-                ],
-
+                [[-size_y/2, 0]],
                 // Bottom-right
-                [
-                    [size_y/2, 0]
-                ],
-
+                [[size_y/2, 0]],
                 // Right vertical wall
-                [
-                    [size_y/2, size_z-radius]
-                ],
-
+                [[size_y/2, size_z-radius]],
                 // Right top quarter-circle
-                [
-                    for (i = [0:fn/4])
-                        [
-                            size_y/2-radius
-                                + radius*cos(i*90/(fn/4)),
-                            size_z-radius
-                                + radius*sin(i*90/(fn/4))
-                        ]
+                [for (i = [0:fn/4])
+                        [size_y/2-radius + radius*                    cos(i*90/(fn/4)), size_z-                    radius + radius*sin(i*90/(                       fn/4))]
                 ],
-
                 // Top
-                [
-                    [-size_y/2+radius, size_z]
-                ],
+                [[-size_y/2+radius, size_z]],
 
                 // Left top quarter-circle
-                [
-                    for (i = [0:fn/4])
-                        [
-                            -size_y/2+radius
-                                - radius*sin(i*90/(fn/4)),
-                            size_z-radius
-                                + radius*cos(i*90/(fn/4))
-                        ]
+                [for (i = [0:fn/4])
+                        [-size_y/2+radius - radius                    *sin(i*90/(fn/4)), size_z-                    radius + radius*cos(i*90/(                    fn/4))]
                 ]
             )
         );
