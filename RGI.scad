@@ -102,19 +102,19 @@ module BOSL2_socket(dt_width, height, dt_height) {
     }
 }
 
-module bottom_plate(dt_width, height, dt_height) {
+module component_shell(dt_width, height, dt_height) {
 
     translate([0,0,0])
     diff()
   cuboid([0,0,0]){
-    attach(BACK) dovetail("male", slide=110, width=dt_width+6*wall_mm, height=dt_height+wall_mm*1.5, angle=30);
-    tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=111, width=dt_width, height=dt_height, angle=30, $slop=dovetail_margin_mm);
+    attach(BACK) dovetail("male", slide=width_mm, width=dt_width+6*wall_mm, height=dt_height+wall_mm*1.5, angle=30);
+    tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=width_mm+1, width=dt_width, height=dt_height, angle=30, $slop=dovetail_margin_mm);
   }
 }
 
-module cut_bottom_plate() {
+module cut_component_shell() {
     difference() {
-        bottom_plate(dt_width,height,dt_height);
+        component_shell(dt_width,height,dt_height);
         cube([slit_width,50,height-slit_margin*2],center = true);
     }
 }
@@ -123,12 +123,12 @@ module component_dovetail(dt_width,height,dt_height) {
     translate([0,0,0])
     diff()
       cuboid([0,0,0]){
-        attach(BACK) dovetail("male", slide=110, width=dt_width, height=dt_height, angle=dt_angle);
+        attach(BACK) dovetail("male", slide=width_mm, width=dt_width, height=dt_height, angle=dt_angle);
         tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=width_mm, width=dt_knife_width/1.8, height=(dt_height-1.5)-1, angle=30);
       }
 }
   
-module cut_top_plate() {
+module cut_component_dovetail() {
     difference() {
         component_dovetail(dt_width,height,dt_height);
         cube([slit_width,50,height-slit_margin*2],center = true);
@@ -556,9 +556,9 @@ module top_end_plate(
             BOSL2_socket(dt_width, height,                      dt_height);
     }
     
-        translate([-15,0,0])
+        
         rotate([90,0,90])
-            cut_bottom_plate();
+            cut_component_shell();
 
     // Male buckle
     translate([prong_length/2 - clip_clasp_length,
@@ -603,7 +603,7 @@ module bottom_end_plate() {
 //            dt_narrow_width
 //        );
         rotate([90,0,90])
-        cut_top_plate();
+        cut_component_dovetail();
         
         translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,0,0])
         generic_female_buckle(cap_height_mm);
@@ -647,23 +647,21 @@ module generic_component (height_mm) {
         
          cube([buckle_case_length,depth_mm,cap_height]);
         
-   
         //BOSL2 Socket
-     translate([-15,0,0])
     rotate([90,0,90])
         BOSL2_socket(dt_width, height_mm, dt_height);
     }
     
     //Female BOSL2 Dovetail shell
-    translate([-15,0,0])
+    translate([0,0,0])
     rotate([90,0,90])
-    cut_bottom_plate();
+    cut_component_shell();
     
     //male BOSL dovetail
-    translate([-15,0,height_mm])
+    translate([0,0,height_mm])
     rotate([90,0,90])
     difference() {
-        cut_top_plate();
+        cut_component_dovetail();
         cube([slit_width,50,height-slit_margin*2],center = true);
     }
     
