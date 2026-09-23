@@ -58,7 +58,7 @@ Here are photos of a prototype 3D printed at small scale for testing
 
 <img src="RGI_photos/IMG_3696.jpeg" width="500">
 
-<img src="RGI_photos/IMG_3697jpeg" width="500">
+<img src="RGI_photos/IMG_3697.jpeg" width="500">
 
 <img src="RGI_photos/IMG_3698.jpeg" width="500">
 
