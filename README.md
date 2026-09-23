@@ -56,14 +56,12 @@ We need electrical engineers and mechanical engineers to make precise how the in
 Here are photos of a prototype 3D printed at small scale for testing
 
 
-![RGI prototype](RGI_photos/IMG_3696.jpeg)
+<img src="RGI_photos/IMG_3696.jpeg" width="500">
 
-![RGI prototype](RGI_photos/IMG_3697.jpeg)
+<img src="RGI_photos/IMG_3697jpeg" width="500">
 
-![RGI prototype](RGI_photos/IMG_3698.jpeg)
+<img src="RGI_photos/IMG_3698.jpeg" width="500">
 
-![RGI prototype](RGI_photos/IMG_3699.jpeg)
+<img src="RGI_photos/IMG_3699.jpeg" width="500">
 
-![RGI prototype](RGI_photos/IMG_3700.jpeg)
-
-
+<img src="RGI_photos/IMG_3700.jpeg" width="500">
