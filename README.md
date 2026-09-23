@@ -51,4 +51,19 @@ having to redesign the case---even if we planned to do make a perfect, compact e
 This is just a sketch of an idea at present.  We can an artist to make a drawing of how this might work phycially, and what it would look like. 
 We need electrical engineers and mechanical engineers to make precise how the interface would work.
 
+# Photos of Prototype
+
+Here are photos of a prototype 3D printed at small scale for testing
+
+
+![RGI prototype](RGI_photos/IMG_3696.jpeg)
+
+![RGI prototype](RGI_photos/IMG_3697.jpeg)
+
+![RGI prototype](RGI_photos/IMG_3698.jpeg)
+
+![RGI prototype](RGI_photos/IMG_3699.jpeg)
+
+![RGI prototype](RGI_photos/IMG_3700.jpeg)
+
 
