@@ -85,7 +85,18 @@ buckle_width  = depth_mm-2*clip_width; // Buckle dimension based on the inner wi
 buckle_height = 9;
 buckle_length = 50;
 
+// ============================================================
+// Prong Dimensions
+// ============================================================
+
+prong_length       = buckle_length - clip_length;
+prong_center_width = 6; // width of the center prong
+prong_center_tap   = prong_center_width/2;
+prong_side_width   = 4; // width of the side prongs
+prong_offset       = 3; // difference between prong location and overall buckle width
+
 cap_height_mm = dt_height + cap_margin_mm + buckle_height + wall_mm;
+top_plate_length = width_mm - prong_length - clip_clasp_length;
 
 // Slit dimensions
 slit_width = 4;
@@ -140,19 +151,6 @@ module cut_component_dovetail() {
 
 // Used under Creative-Commons BY-SA from You Magazine by "amcmichael"
 // https://youmagine.com/amcmichael
-
-
-
-
-// ============================================================
-// Prong Dimensions
-// ============================================================
-
-prong_length       = buckle_length - clip_length;
-prong_center_width = 6; // width of the center prong
-prong_center_tap   = prong_center_width/2;
-prong_side_width   = 4; // width of the side prongs
-prong_offset       = 3; // difference between prong location and overall buckle width
 
 
 // ============================================================
@@ -563,18 +561,15 @@ module generic_female_buckle(height_mm) {
 
 
 module top_end_plate(
-    cap_height = dt_height + cap_margin_mm + buckle_height + case_thickness
 ) {
-
-    top_plate_length = width_mm - prong_length - clip_clasp_length;
 
     difference() {
         translate([(-prong_length-clip_clasp_length)/2,0,0])
         intersection() {
 
-        vertical_corner_chamfer(top_plate_length,       depth_mm, cap_height, corner_radius_mm      , fillet_fn);
+        vertical_corner_chamfer(top_plate_length,       depth_mm, cap_height_mm, corner_radius_mm      , fillet_fn);
 
-        horizontal_top_chamfer( top_plate_length,       depth_mm, cap_height,                      horizontal_radius_mm,                       fillet_fn);
+        horizontal_top_chamfer( top_plate_length,       depth_mm, cap_height_mm,                      horizontal_radius_mm,                       fillet_fn);
          }
 
         // Interior cavity
@@ -582,7 +577,7 @@ module top_end_plate(
         -depth_mm/2 + wall_mm, wall_mm])
         
         cube([top_plate_length - 2*wall_mm,
-            depth_mm - 2*wall_mm, cap_height - 2*           wall_mm]);
+            depth_mm - 2*wall_mm, cap_height_mm - 2*           wall_mm]);
      
   
 
@@ -650,8 +645,6 @@ module blank_face_plate() {
 module generic_component (height_mm) {
     
     buckle_case_length = prong_length + clip_clasp_length;
-    
-    cap_height = dt_height + cap_margin_mm + buckle_height + case_thickness;
    
 
     difference() {
@@ -676,7 +669,7 @@ module generic_component (height_mm) {
         // recess for male buckle
          translate([width_mm/2-buckle_case_length,-25,0])
         
-         cube([buckle_case_length,depth_mm,cap_height]);
+         cube([buckle_case_length,depth_mm,cap_height_mm]);
         
         //BOSL2 Socket
     rotate([90,0,90])
