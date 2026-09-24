@@ -30,6 +30,7 @@ RENDER_SECOND = 1;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
 USE_RENDER_KNIFE = 0;
+V_PRONGS = 1;
 
 // Use this to scale for small, test prints...
 GLOBAL_SCALE_DOWN = 1; // default = 1;
@@ -72,7 +73,7 @@ wiggle_room_factor = 1.2;
 clip_length       = 24; 
 clip_width        = 6.35; // extra material added to side of clip 
 clip_clasp_length = 5;
-prong_angle=30;
+prong_angle=40;
 
 // ============================================================
 // Buckle Dimensions
@@ -274,17 +275,10 @@ module male_prongs(){
 module v_male_prongs(){
     
     // Side 1: prong
-    translate([
-        clip_length + clip_clasp_length,
-        prong_offset + sin(prong_angle) * prong_length,
-        0
-    ])
+    translate([clip_length + clip_clasp_length/2, prong_offset + sin(prong_angle) * prong_length - lock_width*cos(prong_angle), 0])
+    
         rotate([0,0,-prong_angle])
-            cube([
-                prong_length,
-                prong_side_width,
-                buckle_height
-            ]);    
+            cube([prong_length, prong_side_width, buckle_height]);    
     
     
     // Side 1: locking mechanism
@@ -292,20 +286,10 @@ module v_male_prongs(){
     
     
     // Side 2: prong
-    translate([
-        clip_length + clip_clasp_length,
-        buckle_width + 2*clip_width
-            - prong_side_width
-            - prong_offset
-            - sin(prong_angle) * prong_length,
-        0
-    ])
+    translate([clip_length + clip_clasp_length, buckle_width + 2*clip_width - prong_side_width -prong_offset - sin(prong_angle) * prong_length + lock_width*cos(prong_angle),0])
+            
         rotate([0,0,prong_angle])
-            cube([
-                prong_length,
-                prong_side_width,
-                buckle_height
-            ]);
+            cube([prong_length, prong_side_width, buckle_height]);
     
     
     // Side 2: locking mechanism
@@ -395,7 +379,7 @@ size_x,
                 );
 }
 
-// TODO: May syntax more compact
+
 module horizontal_top_chamfer(
     size_x,
     size_y,
@@ -615,7 +599,11 @@ module top_end_plate(
         -(buckle_width/2) - clip_width,
         dt_height + cap_margin_mm])
     
+    if (V_PRONGS) {
+    v_male_buckle();
+}    else {
     male_buckle();
+}
 }
 
 
@@ -717,7 +705,11 @@ module generic_component (height_mm) {
         -(buckle_width/2) - clip_width,
         dt_height + cap_margin_mm-1])
     
+    if (V_PRONGS) {
+    v_male_buckle();
+} else {
     male_buckle();
+}
 }
 
 module render() {
@@ -743,7 +735,7 @@ module render() {
 
             if (RENDER_FIRST) {
                 // First component
-                translate([35,0,0])
+                translate([0,0,0])
                 color("blue")
                 generic_component(50);
             }
