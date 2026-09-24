@@ -72,6 +72,7 @@ wiggle_room_factor = 1.2;
 clip_length       = 24; 
 clip_width        = 6.35; // extra material added to side of clip 
 clip_clasp_length = 5;
+prong_angle=30;
 
 // ============================================================
 // Buckle Dimensions
@@ -186,6 +187,12 @@ module male_buckle(){
     }    
 }
 
+module v_male_buckle(){ 
+    union(){
+        male_clip();
+        v_male_prongs();
+    }    
+}
 
 // ============================================================
 // Male Clip
@@ -264,6 +271,52 @@ module male_prongs(){
 }
 
 
+module v_male_prongs(){
+    
+    // Side 1: prong
+    translate([
+        clip_length + clip_clasp_length,
+        prong_offset + sin(prong_angle) * prong_length,
+        0
+    ])
+        rotate([0,0,-prong_angle])
+            cube([
+                prong_length,
+                prong_side_width,
+                buckle_height
+            ]);    
+    
+    
+    // Side 1: locking mechanism
+    locking_mechanism(); 
+    
+    
+    // Side 2: prong
+    translate([
+        clip_length + clip_clasp_length,
+        buckle_width + 2*clip_width
+            - prong_side_width
+            - prong_offset
+            - sin(prong_angle) * prong_length,
+        0
+    ])
+        rotate([0,0,prong_angle])
+            cube([
+                prong_length,
+                prong_side_width,
+                buckle_height
+            ]);
+    
+    
+    // Side 2: locking mechanism
+    translate([
+        0,
+        buckle_width + 2*clip_width,
+        0
+    ])
+        mirror([0,1,0])
+            locking_mechanism();
+}
 // ============================================================
 // Locking Mechanism
 // ============================================================
@@ -724,3 +777,6 @@ if (USE_RENDER_KNIFE) {
 } else {
     render();
 }
+
+translate([200,0,0])
+v_male_buckle();
