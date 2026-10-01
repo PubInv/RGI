@@ -274,7 +274,7 @@ module male_prongs(){
 module v_male_prongs(){
     
     // Side 1: prong
-    translate([clip_length + clip_clasp_length/2, prong_offset + sin(prong_angle) * prong_length - lock_width*cos(prong_angle), 0])
+    translate([clip_length + clip_clasp_length/2, prong_offset + sin(prong_angle) * prong_length - lock_width*sin(prong_angle)+.1, 0])
     
         rotate([0,0,-prong_angle])
             cube([prong_length, prong_side_width, buckle_height]);    
