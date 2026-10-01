@@ -698,11 +698,11 @@ module generic_component (height_mm) {
     rotate([90,0,90])
         BOSL2_socket(dt_width, height_mm, dt_height);
         
-    translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,depth_mm/2,height_mm-cap_height_mm-cap_fit_margin])
+    translate([(width_mm/2)-(prong_length)/2 + 1,depth_mm/2,height_mm-cap_height_mm-cap_fit_margin-3.6])
         finger_indentation_knife();
     }
     
-    translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,depth_mm/2,height_mm-cap_height_mm-cap_fit_margin])
+    translate([(width_mm/2)-(prong_length)/2 +1,depth_mm/2,height_mm-cap_height_mm-cap_fit_margin-3.6])
         finger_indentation();
     
     
@@ -752,7 +752,7 @@ module render() {
 
             if (RENDER_BOTTOM) {
                     // Bottom cap
-                translate([100,0,0])
+                translate([0,0,0])
                 color("gray")
                 bottom_end_plate();
             }
