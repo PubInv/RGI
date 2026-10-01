@@ -581,8 +581,16 @@ module generic_female_buckle(height_mm) {
  
     translate([3.75,depth_mm/2,5])
     finger_indentation_knife();
+    
+    translate([3.75,-depth_mm/2,5])
+    finger_indentation_knife();
     }
+    
     translate([3.75,depth_mm/2-wall_mm,4])
+    finger_indentation();
+    
+    translate([3.75,-depth_mm/2+wall_mm,4])
+    rotate([0,0,180])
     finger_indentation();
 }
 
@@ -703,11 +711,19 @@ module generic_component (height_mm) {
     rotate([90,0,90])
         BOSL2_socket(dt_width, height_mm, dt_height);
         
+        // Finger Indentation
     translate([(width_mm/2)-(prong_length)/2 + 1,depth_mm/2,cap_height_mm-cap_fit_margin])
+        finger_indentation_knife();
+        
+    translate([(width_mm/2)-(prong_length)/2 + 1,-depth_mm/2,cap_height_mm-cap_fit_margin])
         finger_indentation_knife();
     }
     
     translate([(width_mm/2)-(prong_length)/2 +1,depth_mm/2-wall_mm,cap_height_mm-cap_fit_margin])
+        finger_indentation();
+    
+    translate([(width_mm/2)-(prong_length)/2 +1,-depth_mm/2+wall_mm,cap_height_mm])
+    rotate([0,0,180])
         finger_indentation();
     
     
