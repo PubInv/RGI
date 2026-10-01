@@ -511,6 +511,27 @@ module horizontal_bottom_chamfer(
     }
 }
 
+module finger_indentation_knife() {
+    scale([7.5, 4, 11.5])
+        linear_extrude(height = .75)
+            circle(r = 1, $fn = 100);
+}
+
+module finger_indentation() {
+    
+    difference() {
+        scale([7.5, 4, 11.5])
+        linear_extrude(height = .75)
+            circle(r = 1, $fn = 100);
+        
+        translate([0,wall_mm,0])
+        scale([7.5, 4, 11.5])
+        linear_extrude(height = .75)
+            circle(r = 1, $fn = 100);
+        
+    }
+}
+
 module generic_female_buckle(height_mm) {
 
     buckle_case_length = prong_length + clip_clasp_length;
@@ -676,7 +697,14 @@ module generic_component (height_mm) {
         //BOSL2 Socket
     rotate([90,0,90])
         BOSL2_socket(dt_width, height_mm, dt_height);
+        
+    translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,depth_mm/2,height_mm-cap_height_mm-cap_fit_margin])
+        finger_indentation_knife();
     }
+    
+    translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,depth_mm/2,height_mm-cap_height_mm-cap_fit_margin])
+        finger_indentation();
+    
     
     //Female BOSL2 Dovetail shell
     translate([-wall_mm/2,0,0])
@@ -690,11 +718,12 @@ module generic_component (height_mm) {
         cut_component_dovetail();
         cube([slit_width,50,height-slit_margin*2],center = true);
     }
-    
+    difference() {
     //Female Buckle
     translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,0,height_mm-cap_fit_margin])
         generic_female_buckle(cap_height_mm);
-    
+        
+    }
     // Male buckle
     translate([prong_length/2 - clip_clasp_length,
         -(buckle_width/2) - clip_width,
