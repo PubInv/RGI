@@ -23,10 +23,10 @@ include <BOSL2/joiners.scad>
 
 RENDER = 1;
 RENDER_BOTTOM = 1;
-RENDER_TOP = 1;
+RENDER_TOP = 0;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 1;
-RENDER_SECOND = 1;
+RENDER_FIRST = 0;
+RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
 USE_RENDER_KNIFE = 0;
@@ -92,13 +92,16 @@ buckle_length = 50;
 prong_length       = buckle_length - clip_length;
 prong_center_width = 6; // width of the center prong
 prong_center_tap   = prong_center_width/2;
-if (PRONG_THIN) {
-    prong_side_width   = 2;
-    }
-else {
-    prong_side_width   = 4; // width of the side prongs;
-}
-prong_side_width   = 4; // width of the side prongs
+
+prong_side_width = (PRONG_THIN) ? 3 : 4;
+
+//if (PRONG_THIN) {
+//    prong_side_width   = 2;
+//    }
+//else {
+//    prong_side_width   = 4; // width of the side prongs;
+//}
+// prong_side_width   = 4; // width of the side prongs
 prong_offset       = 3; // difference between prong location and overall buckle width
 
 cap_height_mm = dt_height + cap_margin_mm + buckle_height + wall_mm;
@@ -821,5 +824,5 @@ if (USE_RENDER_KNIFE) {
     render();
 }
 
-translate([200,0,0])
-v_male_buckle();
+//translate([200,0,0])
+//v_male_buckle();
