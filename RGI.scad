@@ -31,7 +31,7 @@ RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
 USE_RENDER_KNIFE = 0;
 V_PRONGS = 1;
-
+PRONG_THIN = 1;
 // Use this to scale for small, test prints...
 GLOBAL_SCALE_DOWN = 1; // default = 1;
 
@@ -92,6 +92,12 @@ buckle_length = 50;
 prong_length       = buckle_length - clip_length;
 prong_center_width = 6; // width of the center prong
 prong_center_tap   = prong_center_width/2;
+if (PRONG_THIN) {
+    prong_side_width   = 2;
+    }
+else {
+    prong_side_width   = 4; // width of the side prongs;
+}
 prong_side_width   = 4; // width of the side prongs
 prong_offset       = 3; // difference between prong location and overall buckle width
 
@@ -796,7 +802,7 @@ module render() {
             
             if (RENDER_TOP) {
                 // Top cap
-                translate([-7,0,50+30])
+                translate([-16,0,50+30])
                 color("gray")
                 top_end_plate();
             }
