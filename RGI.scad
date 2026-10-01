@@ -96,6 +96,7 @@ prong_side_width   = 4; // width of the side prongs
 prong_offset       = 3; // difference between prong location and overall buckle width
 
 cap_height_mm = dt_height + cap_margin_mm + buckle_height + wall_mm;
+cap_fit_margin=0.5;
 top_plate_length = width_mm - prong_length - clip_clasp_length;
 
 // Slit dimensions
@@ -567,9 +568,9 @@ module top_end_plate(
         translate([(-prong_length-clip_clasp_length)/2,0,0])
         intersection() {
 
-        vertical_corner_chamfer(top_plate_length,       depth_mm, cap_height_mm, corner_radius_mm      , fillet_fn);
+        vertical_corner_chamfer(top_plate_length,       depth_mm, cap_height_mm - cap_fit_margin, corner_radius_mm      , fillet_fn);
 
-        horizontal_top_chamfer( top_plate_length,       depth_mm, cap_height_mm,                      horizontal_radius_mm,                       fillet_fn);
+        horizontal_top_chamfer( top_plate_length,       depth_mm, cap_height_mm - cap_fit_margin,                      horizontal_radius_mm,                       fillet_fn);
          }
 
         // Interior cavity
@@ -577,7 +578,7 @@ module top_end_plate(
         -depth_mm/2 + wall_mm, wall_mm])
         
         cube([top_plate_length - 2*wall_mm,
-            depth_mm - 2*wall_mm, cap_height_mm - 2*           wall_mm]);
+            depth_mm - 2*wall_mm, cap_height_mm - cap_fit_margin - 2*           wall_mm]);
      
   
 
@@ -592,7 +593,8 @@ module top_end_plate(
     // Male buckle
     translate([prong_length/2 - clip_clasp_length,
         -(buckle_width/2) - clip_width,
-        dt_height + cap_margin_mm])
+        dt_height + cap_margin_mm-1])
+    
     
     if (V_PRONGS) {
     v_male_buckle();
@@ -631,7 +633,7 @@ module bottom_end_plate() {
         rotate([90,0,90])
         cut_component_dovetail();
         
-        translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,0,0])
+        translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,0,-cap_fit_margin])
         generic_female_buckle(cap_height_mm);
     }
 }
@@ -690,7 +692,7 @@ module generic_component (height_mm) {
     }
     
     //Female Buckle
-    translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,0,height_mm-1.5])
+    translate([(width_mm/2)-(prong_length + clip_clasp_length)/2,0,height_mm-cap_fit_margin])
         generic_female_buckle(cap_height_mm);
     
     // Male buckle
@@ -736,7 +738,7 @@ module render() {
             if (RENDER_SECOND) {
              // Second component
 
-              translate([0,0,50])
+              translate([-7,0,50])
               color("green")
               generic_component(30);
             }
@@ -744,7 +746,7 @@ module render() {
             
             if (RENDER_TOP) {
                 // Top cap
-                translate([0,0,50+30])
+                translate([-7,0,50+30])
                 color("gray")
                 top_end_plate();
             }
