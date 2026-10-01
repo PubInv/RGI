@@ -513,7 +513,7 @@ module horizontal_bottom_chamfer(
 
 module finger_indentation_knife() {
     scale([7.5, 4, 11.5])
-        linear_extrude(height = .75)
+        linear_extrude(height = .66)
             circle(r = 1, $fn = 100);
 }
 
@@ -521,12 +521,12 @@ module finger_indentation() {
     
     difference() {
         scale([7.5, 4, 11.5])
-        linear_extrude(height = .75)
+        linear_extrude(height = .6)
             circle(r = 1, $fn = 100);
         
         translate([0,wall_mm,0])
         scale([7.5, 4, 11.5])
-        linear_extrude(height = .75)
+        linear_extrude(height = .6)
             circle(r = 1, $fn = 100);
         
     }
@@ -577,8 +577,13 @@ module generic_female_buckle(height_mm) {
     translate([3.75,-depth_mm/2,11])
     scale([7, 4,11.5]) 
     linear_extrude(height =2)
-    circle(r = 1, $fn = 100);    
+    circle(r = 1, $fn = 100); 
+ 
+    translate([3.75,depth_mm/2,5])
+    finger_indentation_knife();
     }
+    translate([3.75,depth_mm/2-wall_mm,4])
+    finger_indentation();
 }
 
 
@@ -690,19 +695,19 @@ module generic_component (height_mm) {
         cube([width_mm - 2*wall_mm, depth_mm - 2*       wall_mm, height_mm - 2*wall_mm]);
 
         // recess for male buckle
-         translate([width_mm/2-buckle_case_length,-25,0])
+         translate([width_mm/2-buckle_case_length,-depth_mm/2,0])
         
-         cube([buckle_case_length,depth_mm,cap_height_mm]);
+         cube([buckle_case_length+1,depth_mm+1,cap_height_mm]);
         
         //BOSL2 Socket
     rotate([90,0,90])
         BOSL2_socket(dt_width, height_mm, dt_height);
         
-    translate([(width_mm/2)-(prong_length)/2 + 1,depth_mm/2,height_mm-cap_height_mm-cap_fit_margin-3.6])
+    translate([(width_mm/2)-(prong_length)/2 + 1,depth_mm/2,cap_height_mm-cap_fit_margin])
         finger_indentation_knife();
     }
     
-    translate([(width_mm/2)-(prong_length)/2 +1,depth_mm/2,height_mm-cap_height_mm-cap_fit_margin-3.6])
+    translate([(width_mm/2)-(prong_length)/2 +1,depth_mm/2-wall_mm,cap_height_mm-cap_fit_margin])
         finger_indentation();
     
     
@@ -752,7 +757,7 @@ module render() {
 
             if (RENDER_BOTTOM) {
                     // Bottom cap
-                translate([0,0,0])
+                translate([30,0,0])
                 color("gray")
                 bottom_end_plate();
             }
@@ -767,7 +772,7 @@ module render() {
             if (RENDER_SECOND) {
              // Second component
 
-              translate([-7,0,50])
+              translate([0,0,50])
               color("green")
               generic_component(30);
             }
