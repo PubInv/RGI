@@ -25,7 +25,7 @@ RENDER = 1;
 RENDER_BOTTOM = 1;
 RENDER_TOP = 1;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 1;
+RENDER_FIRST = 0;
 RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
@@ -569,12 +569,12 @@ module generic_female_buckle(height_mm) {
         translate([
         -buckle_case_length/2,
         -depth_mm/2 + wall_mm,
-        wall_mm
+      0
         ])
         cube([
         buckle_case_length - wall_mm,
         depth_mm - 2*wall_mm,
-        height_mm - 2*wall_mm
+        height_mm - wall_mm
         ]);
         
     // TODO: Remove these "magic numbers"
