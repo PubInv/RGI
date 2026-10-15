@@ -583,10 +583,10 @@ module generic_female_buckle(height_mm) {
     linear_extrude(height =2)
     circle(r = 1, $fn = 100);
     translate([3.75,-depth_mm/2,11])
-    scale([7, 4,11.5]) 
+    scale([7.5, 4,11.5]) 
     linear_extrude(height =2)
     circle(r = 1, $fn = 100); 
- 
+    //
     translate([3.75,depth_mm/2,5])
     finger_indentation_knife();
     
