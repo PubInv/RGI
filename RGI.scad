@@ -23,9 +23,9 @@ include <BOSL2/joiners.scad>
 
 RENDER = 1;
 RENDER_BOTTOM = 1;
-RENDER_TOP = 0;
+RENDER_TOP = 1;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 0;
+RENDER_FIRST = 1;
 RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
@@ -107,7 +107,7 @@ prong_offset       = 3; // difference between prong location and overall buckle 
 cap_height_mm = dt_height + cap_margin_mm + buckle_height + wall_mm;
 cap_fit_margin=0.5;
 top_plate_length = width_mm - prong_length - clip_clasp_length;
-
+buckle_case_length = prong_length + clip_clasp_length;
 // Slit dimensions
 slit_width = 4;
 slit_margin = 20; 
@@ -129,8 +129,8 @@ module BOSL2_socket(dt_width, height, dt_height) {
 module component_shell(dt_width, height, dt_height) {
     diff()
   cuboid([0,0,0]){
-    attach(BACK) dovetail("male", slide=width_mm-wall_mm, width=dt_width+6*wall_mm, height=dt_height+wall_mm*1.5, angle=30);
-    tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=width_mm+1, width=dt_width, height=dt_height, angle=30, $slop=dovetail_margin_mm);
+    attach(BACK) dovetail("male", slide=width_mm-buckle_case_length, width=dt_width+6*wall_mm, height=dt_height+wall_mm*1.5, angle=30);
+    tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=width_mm+1-buckle_case_length, width=dt_width, height=dt_height, angle=30, $slop=dovetail_margin_mm);
   }
 }
 
@@ -145,8 +145,8 @@ module component_dovetail(dt_width,height,dt_height) {
     translate([0,0,0])
     diff()
       cuboid([0,0,0]){
-        attach(BACK) dovetail("male", slide=width_mm - wall_mm, width=dt_width, height=dt_height, angle=dt_angle);
-        tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=width_mm, width=dt_knife_width/1.8, height=(dt_height-1.5)-1, angle=30);
+        attach(BACK) dovetail("male", slide=width_mm - buckle_case_length, width=dt_width, height=dt_height, angle=dt_angle);
+        tag("remove")attach(BACK) rotate([180,0,0]) dovetail("female", slide=width_mm-buckle_case_length, width=dt_knife_width/1.8, height=(dt_height-1.5)-1, angle=30);
       }
 }
   
@@ -543,7 +543,6 @@ module finger_indentation() {
 
 module generic_female_buckle(height_mm) {
 
-    buckle_case_length = prong_length + clip_clasp_length;
 
     difference() {
 
@@ -629,7 +628,7 @@ module top_end_plate(
          rotate([90,0,90])
             BOSL2_socket(dt_width, height,                      dt_height);
     }
-        translate([-wall_mm/2,0,0])
+        translate([-buckle_case_length/2,0,0])
         rotate([90,0,90])
             cut_component_shell();
 
@@ -672,7 +671,7 @@ module bottom_end_plate() {
             );
         }
 
-        translate([-wall_mm/2,0,0])
+        translate([-buckle_case_length/2,0,0])
         rotate([90,0,90])
         cut_component_dovetail();
         
@@ -689,9 +688,7 @@ module blank_face_plate() {
 
 module generic_component (height_mm) {
     
-    buckle_case_length = prong_length + clip_clasp_length;
-   
-
+  
     difference() {
 
         // Main body with chamfered vertical outside corners
@@ -737,12 +734,12 @@ module generic_component (height_mm) {
     
     
     //Female BOSL2 Dovetail shell
-    translate([-wall_mm/2,0,0])
+    translate([-buckle_case_length/2,0,0])
     rotate([90,0,90])
     cut_component_shell();
     
     //male BOSL dovetail
-    translate([-wall_mm/2,0,height_mm])
+    translate([-buckle_case_length/2,0,height_mm])
     rotate([90,0,90])
     difference() {
         cut_component_dovetail();
