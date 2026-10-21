@@ -22,11 +22,11 @@ include <BOSL2/joiners.scad>
 
 
 RENDER = 1;
-RENDER_BOTTOM = 0;
-RENDER_TOP = 0;
+RENDER_BOTTOM = 1;
+RENDER_TOP = 1;
 RENDER_FIT_TEST = 0;
 RENDER_FIRST = 1;
-RENDER_SECOND = 0;
+RENDER_SECOND = 1;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
 USE_RENDER_KNIFE = 0;
@@ -714,11 +714,11 @@ module generic_component (height_mm) {
          cube([buckle_case_length+1,depth_mm+1,cap_height_mm]);
          
          //faceplate cutout
-         translate([-buckle_case_length/2,depth_mm/2, height_mm/2+(dt_height+buckle_height)/2]) 
+         translate([-buckle_case_length/2,depth_mm/2-wall_mm/4, height_mm/2+(dt_height+buckle_height)/2]) 
          cube([width_mm-buckle_case_length-wall_mm*2-1,wall_mm/2, height_mm - wall_mm*2-dt_height-buckle_height], true);
          
          translate([-buckle_case_length/2,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2])
-         cube([width_mm-buckle_case_length-wall_mm*4-1,wall_mm, height_mm - wall_mm*4-dt_height-buckle_height], true);
+         cube([width_mm-buckle_case_length-wall_mm*4-1,wall_mm+1, height_mm - wall_mm*4-dt_height-buckle_height], true);
         
         //BOSL2 Socket
     rotate([90,0,90])
@@ -809,7 +809,7 @@ module render() {
             
             if (RENDER_TOP) {
                 // Top cap
-                translate([-16,0,50+30])
+                translate([-50,0,50+30])
                 color("gray")
                 top_end_plate();
             }
