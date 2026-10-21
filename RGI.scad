@@ -22,10 +22,10 @@ include <BOSL2/joiners.scad>
 
 
 RENDER = 1;
-RENDER_BOTTOM = 1;
-RENDER_TOP = 1;
+RENDER_BOTTOM = 0;
+RENDER_TOP = 0;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 0;
+RENDER_FIRST = 1;
 RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
@@ -712,6 +712,13 @@ module generic_component (height_mm) {
          translate([width_mm/2-buckle_case_length,-depth_mm/2,0])
         
          cube([buckle_case_length+1,depth_mm+1,cap_height_mm]);
+         
+         //faceplate cutout
+         translate([-buckle_case_length/2,depth_mm/2, height_mm/2+(dt_height+buckle_height)/2]) 
+         cube([width_mm-buckle_case_length-wall_mm*2-1,wall_mm/2, height_mm - wall_mm*2-dt_height-buckle_height], true);
+         
+         translate([-buckle_case_length/2,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2])
+         cube([width_mm-buckle_case_length-wall_mm*4-1,wall_mm, height_mm - wall_mm*4-dt_height-buckle_height], true);
         
         //BOSL2 Socket
     rotate([90,0,90])
@@ -756,7 +763,7 @@ module generic_component (height_mm) {
         -(buckle_width/2) - clip_width,
         dt_height + cap_margin_mm-1])
     
-    if (V_PRONGS) {
+    #if (V_PRONGS) {
     v_male_buckle();
 } else {
     male_buckle();
