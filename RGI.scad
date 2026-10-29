@@ -53,7 +53,7 @@ bottom_height = 6;
 
 screw_r1=2.8; //top of head radius
 screw_r2=1.35; //bottom of head radius
-screw_pilot=1.35;
+screw_pilot=2.76/2;
 screw_head_height=1.65;
 
 // These concern chamfering
@@ -877,7 +877,7 @@ module render() {
                 top_end_plate();
             }
             if (RENDER_FACE){
-                translate([-buckle_case_length/2, depth_mm/2+5, 33])
+                translate([-buckle_case_length/2, depth_mm/2+20, 33])
                 rotate([0,0,180])
                 blank_face_plate(50);
             }
