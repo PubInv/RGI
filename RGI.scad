@@ -24,8 +24,9 @@ include <BOSL2/joiners.scad>
 RENDER = 1;
 RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
+RENDER_FACE = 1;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 0;
+RENDER_FIRST = 1;
 RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
@@ -875,6 +876,11 @@ module render() {
                 color("gray")
                 top_end_plate();
             }
+            if (RENDER_FACE){
+                translate([-buckle_case_length/2, depth_mm/2+5, 33])
+                rotate([0,0,180])
+                blank_face_plate(50);
+            }
         }
     }
 }
@@ -889,4 +895,3 @@ if (USE_RENDER_KNIFE) {
 } else {
     render();
 }
-blank_face_plate(50);
