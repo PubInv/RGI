@@ -22,11 +22,11 @@ include <BOSL2/joiners.scad>
 
 
 RENDER = 1;
-RENDER_BOTTOM = 1;
-RENDER_TOP = 1;
+RENDER_BOTTOM = 0;
+RENDER_TOP = 0;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 1;
-RENDER_SECOND = 1;
+RENDER_FIRST = 0;
+RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
 USE_RENDER_KNIFE = 0;
@@ -218,7 +218,7 @@ module male_clip(){
         ])
             cube([
                 clip_clasp_length - 2*minkowski_rad,
-                buckle_width + 2*(clip_width-minkowski_rad),
+                buckle_width + 2*(clip_width-minkowski_rad)-1,
                 buckle_height - minkowski_height
             ]);
         
@@ -680,9 +680,15 @@ module bottom_end_plate() {
     }
 }
 
-module blank_face_plate() {
-}
+module blank_face_plate(height_mm) {
+    difference () {
+        cube([width_mm-buckle_case_length-wall_mm*2-1,wall_mm/2, height_mm - wall_mm*2-dt_height-buckle_height], true)
+        translate([0,wall_mm/2,0])
+        cube([width_mm-buckle_case_length-wall_mm*4-1,wall_mm+1, height_mm - wall_mm*4-dt_height-buckle_height], true);
+        
 
+                   }
+}
 
 
 
@@ -763,7 +769,7 @@ module generic_component (height_mm) {
         -(buckle_width/2) - clip_width,
         dt_height + cap_margin_mm-1])
     
-    #if (V_PRONGS) {
+    if (V_PRONGS) {
     v_male_buckle();
 } else {
     male_buckle();
@@ -827,6 +833,4 @@ if (USE_RENDER_KNIFE) {
 } else {
     render();
 }
-
-//translate([200,0,0])
-//v_male_buckle();
+blank_face_plate(50);
