@@ -26,7 +26,7 @@ RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
 RENDER_FACE = 1;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 1;
+RENDER_FIRST = 0;
 RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
@@ -55,6 +55,10 @@ screw_r1=2.8; //top of head radius
 screw_r2=1.35; //bottom of head radius
 screw_pilot=2.76/2;
 screw_head_height=1.65;
+
+anchor_height=5;
+anchor_ro=5/2;
+anchor_ri=2.75/2;
 
 // These concern chamfering
 cap_margin_mm = 4;
@@ -747,6 +751,16 @@ module blank_face_plate(height_mm) {
                    }
 }
 
+module m3_screw_anchor (){
+    difference(){
+        rotate ([90,0,0])
+        cylinder(anchor_height, anchor_ro, anchor_ro);
+        translate([0,.5,0])
+        rotate([90,0,0])
+        cylinder(anchor_height+1, anchor_ri, anchor_ri);
+                }
+    }
+
 
 
 module generic_component (height_mm) {
@@ -895,3 +909,5 @@ if (USE_RENDER_KNIFE) {
 } else {
     render();
 }
+
+m3_screw_anchor ();
