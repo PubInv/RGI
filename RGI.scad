@@ -51,23 +51,25 @@ dovetail_margin_mm = 0.5; // this is the tolerance gap between the tail and cado
 knife_margin_mm = 0.01;
 bottom_height = 6;
 
-screw_r1_ns=2.8*GLOBAL_SCALE_DOWN; //top of head radius
-screw_r2_ns=1.35*GLOBAL_SCALE_DOWN; //bottom of head radius
-screw_pilot_ns=1.38*GLOBAL_SCALE_DOWN;
-screw_head_height_ns=1.65*GLOBAL_SCALE_DOWN;
-
-anchor_height_ns=(depth_mm-wall_mm)*GLOBAL_SCALE_DOWN;
-anchor_ro_ns=2.5*GLOBAL_SCALE_DOWN;
-anchor_ri_ns=1.375*GLOBAL_SCALE_DOWN;
-
-screw_r1=2.8; //top of head radius
-screw_r2=1.35; //bottom of head radius
-screw_pilot=1.38;
-screw_head_height=1.65;
+screw_r1=1.9; //top of head radius
+screw_r2=1; //bottom of head radius
+screw_pilot=0.8;
+screw_head_height=1.3;
 
 anchor_height=depth_mm-wall_mm;
-anchor_ro=2.5;
-anchor_ri=1.375;
+anchor_ro=2;
+anchor_ri=0.8;
+
+screw_r1_ns=screw_r1*GLOBAL_SCALE_DOWN; //top of head radius
+screw_r2_ns=screw_r2*GLOBAL_SCALE_DOWN; //bottom of head radius
+screw_pilot_ns=screw_pilot*GLOBAL_SCALE_DOWN;
+screw_head_height_ns=screw_head_height*GLOBAL_SCALE_DOWN;
+
+anchor_height_ns=anchor_height*GLOBAL_SCALE_DOWN;
+anchor_ro_ns=anchor_ro*GLOBAL_SCALE_DOWN;
+anchor_ri_ns=anchor_ri*GLOBAL_SCALE_DOWN;
+
+faceplate_margin_mm=0.2;
 
 // These concern chamfering
 cap_margin_mm = 4;
@@ -699,62 +701,49 @@ module bottom_end_plate() {
     }
 }
 
+module m3_screw_tap() {
+    translate([0,-screw_head_height_ns,0])
+    rotate([-90,0,0])
+    cylinder(screw_head_height_ns,screw_r2_ns,screw_r1_ns);
+    translate([0,-screw_head_height_ns*2,0])
+    rotate([-90,0,0])
+    cylinder(wall_mm,screw_pilot_ns,screw_pilot_ns);
+    }
+
 module blank_face_plate(height_mm) {
     difference () {
-        cube([width_mm-buckle_case_length-wall_mm*2-1,wall_mm/2, height_mm - wall_mm*2-dt_height-buckle_height], true)
-        translate([0,wall_mm/2,0])
-        cube([width_mm-buckle_case_length-wall_mm*4-1,wall_mm, height_mm - wall_mm*4-dt_height-buckle_height], true);
-        translate([(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1,wall_mm/2,(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1])
-        rotate([90,0,0])
-        cylinder(screw_head_height_ns,screw_r2_ns,screw_r1_ns);
+        cube([width_mm-buckle_case_length-wall_mm*2-1-faceplate_margin_mm,wall_mm, height_mm - wall_mm*2-dt_height-buckle_height-faceplate_margin_mm],true);
+        translate([(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns, -wall_mm/2,
+            (height_mm-wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns])
+        rotate([180,0,0])
+                 m3_screw_tap();
         
         mirror([1,0,0])
         translate([
-            (width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1,
-            wall_mm/2,
-            (height_mm-wall_mm*2-dt_height-buckle_height)/2-2*screw_r1
+            (width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns, -wall_mm/2,
+            (height_mm-wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns
         ])
-        rotate([90,0,0])
-        cylinder(screw_head_height_ns,screw_r2_ns,screw_r1_ns);
+        rotate([180,0,0])
+                 m3_screw_tap();
 
         mirror([0,0,1])
         translate([
-            (width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1,
-            wall_mm/2,
-            (height_mm-wall_mm*2-dt_height-buckle_height)/2-2*screw_r1
+            (width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns, -wall_mm/2,
+            (height_mm-wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns
         ])
-        rotate([90,0,0])
-        cylinder(screw_head_height_ns,screw_r2_ns,screw_r1_ns);
+        rotate([180,0,0])
+                 m3_screw_tap();
 
         mirror([1,0,0])
         mirror([0,0,1])
         translate([
-            (width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1,
-            wall_mm/2,
-            (height_mm-wall_mm*2-dt_height-buckle_height)/2-2*screw_r1
+            (width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns, -wall_mm/2,
+            (height_mm-wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns
         ])
-        rotate([90,0,0])
-        cylinder(screw_head_height_ns,screw_r2_ns,screw_r1_ns);
+        rotate([180,0,0])
+                 m3_screw_tap();
         
-        translate([(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1,wall_mm/2+screw_head_height,(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1])
-        rotate([90,0,0])
-        cylinder(wall_mm,screw_pilot_ns,screw_pilot_ns);
         
-        mirror([1,0,0])
-        translate([(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1,wall_mm/2+screw_head_height,(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1])
-        rotate([90,0,0])
-        cylinder(wall_mm,screw_pilot_ns,screw_pilot_ns);
-        
-        mirror([0,0,1])
-        translate([(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1,wall_mm/2+screw_head_height,(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1])
-        rotate([90,0,0])
-        cylinder(wall_mm,screw_pilot_ns,screw_pilot_ns);
-        
-        mirror([1,0,0])
-        mirror([0,0,1])
-        translate([(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1,wall_mm/2+screw_head_height,(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1])
-        rotate([90,0,0])
-        cylinder(wall_mm,screw_pilot_ns,screw_pilot_ns);
     
 
                    }
@@ -768,8 +757,8 @@ module m3_screw_anchor (){
         rotate([90,0,0])
         cylinder(anchor_height+1, anchor_ri_ns, anchor_ri_ns);
                 }
-    translate([-anchor_ro/2,-anchor_height,anchor_ro])
-        cube([wall_mm,anchor_height,anchor_ro*2]);
+    translate([-anchor_ro/2,-anchor_height,anchor_ro-anchor_ri/2])
+        cube([wall_mm,anchor_height,anchor_ro_ns*2]);
     }
 
 
@@ -802,11 +791,8 @@ module generic_component (height_mm) {
          cube([buckle_case_length+1,depth_mm+1,cap_height_mm]);
          
          //faceplate cutout
-         translate([-buckle_case_length/2,depth_mm/2-wall_mm/4, height_mm/2+(dt_height+buckle_height)/2]) 
-         cube([width_mm-buckle_case_length-wall_mm*2-1,wall_mm/2, height_mm - wall_mm*2-dt_height-buckle_height], true);
-         
-         translate([-buckle_case_length/2,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2])
-         cube([width_mm-buckle_case_length-wall_mm*4-1,wall_mm+1, height_mm - wall_mm*4-dt_height-buckle_height], true);
+         translate([-buckle_case_length/2,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2]) 
+         cube([width_mm-buckle_case_length-wall_mm*2-1,wall_mm+1, height_mm - wall_mm*2-dt_height-buckle_height], true);
         
         //BOSL2 Socket
     rotate([90,0,90])
@@ -858,17 +844,17 @@ module generic_component (height_mm) {
         }
         
         // screw anchor
-    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+2*screw_r1,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2+(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1])
+    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+2*screw_r1_ns,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2+(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns])
     m3_screw_anchor();
         
-    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2+(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1])
+    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2+(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns])
     m3_screw_anchor();
         
-    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2-(height_mm - wall_mm*2-dt_height-buckle_height)/2+2*screw_r1])
+    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2-(height_mm - wall_mm*2-dt_height-buckle_height)/2+2*screw_r1_ns])
     rotate([0,155,0])
-    #m3_screw_anchor();
+    m3_screw_anchor();
     
-    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+2*screw_r1,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2-(height_mm - wall_mm*2-dt_height-buckle_height)/2+2*screw_r1])
+    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+2*screw_r1_ns,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2-(height_mm - wall_mm*2-dt_height-buckle_height)/2+2*screw_r1_ns])
     rotate([0,-90,0])
     m3_screw_anchor();
         
@@ -918,8 +904,8 @@ module render() {
                 top_end_plate();
             }
             if (RENDER_FACE){
-                translate([-buckle_case_length/2, depth_mm/2+20, 33])
-                rotate([0,0,180])
+                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2, 33.5])
+                rotate([180,0,0])
                 blank_face_plate(50);
             }
         }
