@@ -26,7 +26,7 @@ RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
 RENDER_FACE = 1;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 0;
+RENDER_FIRST = 1;
 RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
@@ -56,7 +56,7 @@ screw_r2=1.35; //bottom of head radius
 screw_pilot=2.76/2;
 screw_head_height=1.65;
 
-anchor_height=5;
+anchor_height=12;
 anchor_ro=5/2;
 anchor_ri=2.75/2;
 
@@ -844,7 +844,10 @@ module generic_component (height_mm) {
     v_male_buckle();
 } else {
     male_buckle();
-}
+        }
+    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+2*screw_r1,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2+(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1])
+    #m3_screw_anchor();
+        
 }
 
 module render() {
