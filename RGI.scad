@@ -28,8 +28,8 @@ RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
 RENDER_FACE = 1;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 0;
-RENDER_SECOND = 0;
+RENDER_FIRST = 1;
+RENDER_SECOND = 2;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
 USE_RENDER_KNIFE = 0;
@@ -730,7 +730,8 @@ module m3_screw_anchor (){
     }
 
 
-    module blank_face_plate(height_mm) {
+module blank_face_plate(height_mm) {
+    color(c = [100,100,0],0.5)
     difference () {
         cube([width_mm-buckle_case_length-wall_mm*2-1-faceplate_margin_mm,wall_mm, height_mm - wall_mm*2-dt_height-buckle_height-faceplate_margin_mm],true);
         translate([(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns, -wall_mm/2,
