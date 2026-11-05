@@ -239,7 +239,7 @@ module male_clip(){
         ])
             cube([
                 clip_clasp_length - 2*minkowski_rad,
-                buckle_width + 2*(clip_width-minkowski_rad)-1,
+                buckle_width + 2*(clip_width-minkowski_rad)-wall_mm,
                 buckle_height - minkowski_height
             ]);
         
@@ -844,17 +844,17 @@ module generic_component (height_mm) {
         }
         
         // screw anchor
-    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+2*screw_r1_ns,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2+(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns])
+    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+2*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height+buckle_height)/2+(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns])
     m3_screw_anchor();
         
-    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2+(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns])
+    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height+buckle_height)/2+(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns])
     m3_screw_anchor();
         
-    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2-(height_mm - wall_mm*2-dt_height-buckle_height)/2+2*screw_r1_ns])
+    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height+buckle_height)/2-(height_mm - wall_mm*2-dt_height-buckle_height)/2+2*screw_r1_ns])
     rotate([0,155,0])
     m3_screw_anchor();
     
-    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+2*screw_r1_ns,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2-(height_mm - wall_mm*2-dt_height-buckle_height)/2+2*screw_r1_ns])
+    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+2*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height+buckle_height)/2-(height_mm - wall_mm*2-dt_height-buckle_height)/2+2*screw_r1_ns])
     rotate([0,-90,0])
     m3_screw_anchor();
         
