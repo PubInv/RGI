@@ -19,14 +19,16 @@ include <BOSL2/joiners.scad>
 //    along with this program.  If not, see 
 //    http://www.gnu.org/licenses/.
 
-
+// TODO: Create a flagged version 
+// that prints all modules (2 generic of different sizes) and top and bottom)
+// In proper position.
 
 RENDER = 1;
 RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
 RENDER_FACE = 1;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 1;
+RENDER_FIRST = 0;
 RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
@@ -42,7 +44,7 @@ wall_mm = 2; // This may not scale linearly if you print small
 depth_mm = 50;
 width_mm = 140;
 
-generic_component_default_height = 100;
+generic_component_default_height = 50;
 
 
 dt_angle = 30;
@@ -712,7 +714,23 @@ module m3_screw_tap() {
     cylinder(wall_mm,screw_pilot_ns,screw_pilot_ns);
     }
 
-module blank_face_plate(height_mm) {
+    
+///////////// USE OR REWRITE THESE (BELOW HERE) /////
+
+module m3_screw_anchor (){
+    difference(){
+        rotate ([90,0,0])
+        cylinder(anchor_height, anchor_ro_ns, anchor_ro_ns);
+        translate([0,.5,0])
+        rotate([90,0,0])
+        cylinder(anchor_height+1, anchor_ri_ns, anchor_ri_ns);
+                }
+    translate([-anchor_ro/2,-anchor_height+wall_mm,anchor_ro-anchor_ri/2])
+        cube([wall_mm,anchor_height-wall_mm,anchor_ro_ns*2]);
+    }
+
+
+    module blank_face_plate(height_mm) {
     difference () {
         cube([width_mm-buckle_case_length-wall_mm*2-1-faceplate_margin_mm,wall_mm, height_mm - wall_mm*2-dt_height-buckle_height-faceplate_margin_mm],true);
         translate([(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns, -wall_mm/2,
@@ -750,20 +768,6 @@ module blank_face_plate(height_mm) {
 
                    }
 }
-
-module m3_screw_anchor (){
-    difference(){
-        rotate ([90,0,0])
-        cylinder(anchor_height, anchor_ro_ns, anchor_ro_ns);
-        translate([0,.5,0])
-        rotate([90,0,0])
-        cylinder(anchor_height+1, anchor_ri_ns, anchor_ri_ns);
-                }
-    translate([-anchor_ro/2,-anchor_height+wall_mm,anchor_ro-anchor_ri/2])
-        cube([wall_mm,anchor_height-wall_mm,anchor_ro_ns*2]);
-    }
-
-
 
 module generic_component (height_mm) {
     
