@@ -757,8 +757,8 @@ module m3_screw_anchor (){
         rotate([90,0,0])
         cylinder(anchor_height+1, anchor_ri_ns, anchor_ri_ns);
                 }
-    translate([-anchor_ro/2,-anchor_height,anchor_ro-anchor_ri/2])
-        cube([wall_mm,anchor_height,anchor_ro_ns*2]);
+    translate([-anchor_ro/2,-anchor_height+wall_mm,anchor_ro-anchor_ri/2])
+        cube([wall_mm,anchor_height-wall_mm,anchor_ro_ns*2]);
     }
 
 
