@@ -42,6 +42,8 @@ wall_mm = 2; // This may not scale linearly if you print small
 depth_mm = 50;
 width_mm = 140;
 
+generic_component_default_height = 100;
+
 
 dt_angle = 30;
 dt_width = 20;
@@ -885,7 +887,7 @@ module render() {
                 // First component
                 translate([0,0,0])
                 color("blue")
-                generic_component(50);
+                generic_component(generic_component_default_height);
             }
 
             if (RENDER_SECOND) {
@@ -903,10 +905,14 @@ module render() {
                 color("gray")
                 top_end_plate();
             }
+            // TODO: Create a variable for translate
+            // which does the math here
+            z_translate = 
+            generic_component_default_height/2+(dt_height+buckle_height)/2;
             if (RENDER_FACE){
-                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2, 33.5])
+                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2, z_translate])
                 rotate([180,0,0])
-                blank_face_plate(50);
+                blank_face_plate(generic_component_default_height);
             }
         }
     }
