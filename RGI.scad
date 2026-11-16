@@ -36,7 +36,7 @@ USE_RENDER_KNIFE = 0;
 V_PRONGS = 1;
 PRONG_THIN = 1;
 // Use this to scale for small, test prints...
-GLOBAL_SCALE_DOWN = 1; // default = 1;
+GLOBAL_SCALE_DOWN = 2; // default = 1;
 
 // Components macro dimenstions
 height= 100;
@@ -732,6 +732,9 @@ module m2_screw_anchor (){
 
 
 module blank_face_plate(height_mm) {
+    
+    assert(height_mm >= 37, "ERROR: height_mm must be at least 37 ");
+    
     color(c = [100,100,0],0.5)
     difference () {
         cube([width_mm-buckle_case_length-wall_mm*2-1-faceplate_margin_mm,wall_mm, height_mm - wall_mm*2-dt_height-faceplate_margin_mm],true);
@@ -773,6 +776,7 @@ module blank_face_plate(height_mm) {
 
 module generic_component (height_mm) {
     
+    assert(height_mm >= 37, "ERROR: height_mm must be at least 37");
   
     difference() {
 
@@ -901,8 +905,9 @@ module render() {
 
               translate([0,0,50])
               color("green")
-              generic_component(30);
+              generic_component(37);
             }
+            
           
             
             if (RENDER_TOP) {
@@ -933,8 +938,3 @@ if (USE_RENDER_KNIFE) {
 } else {
     render();
 }
-translate([-150,0,0])
-generic_component(25);
-translate([-150-buckle_case_length/2,depth_mm/2-wall_mm/2,25/2+dt_height/2])
-rotate([180,0,0])
-blank_face_plate(25);
