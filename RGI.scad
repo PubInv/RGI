@@ -705,17 +705,18 @@ module bottom_end_plate() {
     }
 }
 
+///////////// USE OR REWRITE THESE (BELOW HERE) /////
+
 module m2_screw_tap() {
     translate([0,-screw_head_height_ns,0])
     rotate([-90,0,0])
-    cylinder(screw_head_height_ns,screw_r2_ns,screw_r1_ns);
+    cylinder(screw_head_height_ns+.1,screw_r2_ns,screw_r1_ns);
     translate([0,-screw_head_height_ns*2,0])
     rotate([-90,0,0])
     cylinder(wall_mm,screw_pilot_ns,screw_pilot_ns);
     }
 
     
-///////////// USE OR REWRITE THESE (BELOW HERE) /////
 
 module m2_screw_anchor (){
     difference(){
@@ -733,36 +734,36 @@ module m2_screw_anchor (){
 module blank_face_plate(height_mm) {
     color(c = [100,100,0],0.5)
     difference () {
-        cube([width_mm-buckle_case_length-wall_mm*2-1-faceplate_margin_mm,wall_mm, height_mm - wall_mm*2-dt_height-buckle_height-faceplate_margin_mm],true);
-        translate([(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns, -wall_mm/2,
-            (height_mm-wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns])
+        cube([width_mm-buckle_case_length-wall_mm*2-1-faceplate_margin_mm,wall_mm, height_mm - wall_mm*2-dt_height-faceplate_margin_mm],true);
+        translate([(width_mm-buckle_case_length-wall_mm*2-1)/2-3*screw_r1_ns, -wall_mm/2,
+            (height_mm-wall_mm*2-dt_height)/2-2*screw_r1_ns])
         rotate([180,0,0])
-                 m3_screw_tap();
+                 m2_screw_tap();
         
         mirror([1,0,0])
         translate([
-            (width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns, -wall_mm/2,
-            (height_mm-wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns
+            (width_mm-buckle_case_length-wall_mm*2-1)/2-3*screw_r1_ns, -wall_mm/2,
+            (height_mm-wall_mm*2-dt_height)/2-2*screw_r1_ns
         ])
         rotate([180,0,0])
-                 m3_screw_tap();
+                 m2_screw_tap();
 
         mirror([0,0,1])
         translate([
-            (width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns, -wall_mm/2,
-            (height_mm-wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns
+            (width_mm-buckle_case_length-wall_mm*2-1)/2-3*screw_r1_ns, -wall_mm/2,
+            (height_mm-wall_mm*2-dt_height)/2-2*screw_r1_ns
         ])
         rotate([180,0,0])
-                 m3_screw_tap();
+                 m2_screw_tap();
 
         mirror([1,0,0])
         mirror([0,0,1])
         translate([
-            (width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns, -wall_mm/2,
-            (height_mm-wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns
+            (width_mm-buckle_case_length-wall_mm*2-1)/2-3*screw_r1_ns, -wall_mm/2,
+            (height_mm-wall_mm*2-dt_height)/2-2*screw_r1_ns
         ])
         rotate([180,0,0])
-                 m3_screw_tap();
+                 m2_screw_tap();
         
         
     
@@ -798,8 +799,8 @@ module generic_component (height_mm) {
          cube([buckle_case_length+1,depth_mm+1,cap_height_mm]);
          
          //faceplate cutout
-         translate([-buckle_case_length/2,depth_mm/2-wall_mm/2, height_mm/2+(dt_height+buckle_height)/2]) 
-         cube([width_mm-buckle_case_length-wall_mm*2-1,wall_mm+1, height_mm - wall_mm*2-dt_height-buckle_height], true);
+         translate([-buckle_case_length/2,depth_mm/2-wall_mm/2, height_mm/2+(dt_height)/2]) 
+         cube([width_mm-buckle_case_length-wall_mm*2-1,wall_mm+1, height_mm - wall_mm*2-dt_height], true);
         
         //BOSL2 Socket
     rotate([90,0,90])
@@ -851,19 +852,19 @@ module generic_component (height_mm) {
         }
         
         // screw anchor
-    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+2*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height+buckle_height)/2+(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns])
-    m3_screw_anchor();
+    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+3*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height)/2+(height_mm - wall_mm*2-dt_height)/2-2*screw_r1_ns])
+    m2_screw_anchor();
         
-    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height+buckle_height)/2+(height_mm - wall_mm*2-dt_height-buckle_height)/2-2*screw_r1_ns])
-    m3_screw_anchor();
+    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-3*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height)/2+(height_mm - wall_mm*2-dt_height)/2-2*screw_r1_ns])
+    m2_screw_anchor();
         
-    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-2*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height+buckle_height)/2-(height_mm - wall_mm*2-dt_height-buckle_height)/2+2*screw_r1_ns])
-    rotate([0,155,0])
-    m3_screw_anchor();
+    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-3*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height)/2-(height_mm - wall_mm*2-dt_height)/2+2*screw_r1_ns])
+    rotate([0,90,0])
+    m2_screw_anchor();
     
-    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+2*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height+buckle_height)/2-(height_mm - wall_mm*2-dt_height-buckle_height)/2+2*screw_r1_ns])
+    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+3*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height)/2-(height_mm - wall_mm*2-dt_height)/2+2*screw_r1_ns])
     rotate([0,-90,0])
-    m3_screw_anchor();
+    m2_screw_anchor();
         
 }
 
@@ -912,9 +913,9 @@ module render() {
             }
             
             z_translate = 
-            generic_component_default_height/2+(dt_height+buckle_height)/2;
+            generic_component_default_height/2+(dt_height)/2;
             if (RENDER_FACE){
-                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2, z_translate])
+                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2+20, z_translate])
                 rotate([180,0,0])
                 blank_face_plate(generic_component_default_height);
             }
