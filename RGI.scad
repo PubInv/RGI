@@ -36,7 +36,7 @@ USE_RENDER_KNIFE = 0;
 V_PRONGS = 1;
 PRONG_THIN = 1;
 // Use this to scale for small, test prints...
-GLOBAL_SCALE_DOWN = 2; // default = 1;
+GLOBAL_SCALE_DOWN = 1; // default = 1;
 
 // Components macro dimenstions
 height= 100;
@@ -705,7 +705,7 @@ module bottom_end_plate() {
     }
 }
 
-module m3_screw_tap() {
+module m2_screw_tap() {
     translate([0,-screw_head_height_ns,0])
     rotate([-90,0,0])
     cylinder(screw_head_height_ns,screw_r2_ns,screw_r1_ns);
@@ -717,7 +717,7 @@ module m3_screw_tap() {
     
 ///////////// USE OR REWRITE THESE (BELOW HERE) /////
 
-module m3_screw_anchor (){
+module m2_screw_anchor (){
     difference(){
         rotate ([90,0,0])
         cylinder(anchor_height, anchor_ro_ns, anchor_ro_ns);
@@ -910,8 +910,7 @@ module render() {
                 color("gray")
                 top_end_plate();
             }
-            // TODO: Create a variable for translate
-            // which does the math here
+            
             z_translate = 
             generic_component_default_height/2+(dt_height+buckle_height)/2;
             if (RENDER_FACE){
@@ -933,3 +932,5 @@ if (USE_RENDER_KNIFE) {
 } else {
     render();
 }
+translate([-150,0,0])
+generic_component(50);
