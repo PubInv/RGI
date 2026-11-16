@@ -915,7 +915,7 @@ module render() {
             z_translate = 
             generic_component_default_height/2+(dt_height)/2;
             if (RENDER_FACE){
-                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2+20, z_translate])
+                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2, z_translate])
                 rotate([180,0,0])
                 blank_face_plate(generic_component_default_height);
             }
@@ -934,4 +934,7 @@ if (USE_RENDER_KNIFE) {
     render();
 }
 translate([-150,0,0])
-generic_component(50);
+generic_component(25);
+translate([-150-buckle_case_length/2,depth_mm/2-wall_mm/2,25/2+dt_height/2])
+rotate([180,0,0])
+blank_face_plate(25);
