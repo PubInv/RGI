@@ -26,17 +26,17 @@ include <BOSL2/joiners.scad>
 RENDER = 1;
 RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
-RENDER_FACE = 1;
+RENDER_FACE = 0;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 1;
-RENDER_SECOND = 2;
+RENDER_FIRST = 0;
+RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
 USE_RENDER_KNIFE = 0;
 V_PRONGS = 1;
 PRONG_THIN = 1;
 // Use this to scale for small, test prints...
-GLOBAL_SCALE_DOWN = 2; // default = 1;
+GLOBAL_SCALE_DOWN = 1; // default = 1;
 
 // Components macro dimenstions
 height= 100;
@@ -74,6 +74,11 @@ anchor_ro_ns=anchor_ro*GLOBAL_SCALE_DOWN;
 anchor_ri_ns=anchor_ri*GLOBAL_SCALE_DOWN;
 
 faceplate_margin_mm=0.2;
+
+logo_scale = .5;
+logo_height_mm = 0.5;
+logo_x = 0;
+logo_z = 0;
 
 // These concern chamfering
 cap_margin_mm = 4;
@@ -774,6 +779,31 @@ module blank_face_plate(height_mm) {
                    }
 }
 
+module PI_logo() {
+    rotate([90,0,0])
+    linear_extrude(height = 0.5)
+    scale(logo_scale)
+        import("/Users/jamesdenney/Desktop/RGI/PI_logo.svg", center = true);
+}
+
+module PI_logoPNG() {
+        rotate([90,0,0])
+        scale([0.1,0.1,0.009])
+            surface(file="/Users/jamesdenney/Desktop/RGI/PI_logo.png",center=true);
+}
+module PI_faceplate(height_mm) {
+
+    union() {
+
+        blank_face_plate(height_mm);
+
+        translate([logo_x, -wall_mm/2, logo_z])
+            #PI_logoPNG();
+
+    }
+
+}
+
 module generic_component (height_mm) {
     
     assert(height_mm >= 37, "ERROR: height_mm must be at least 37");
@@ -938,3 +968,7 @@ if (USE_RENDER_KNIFE) {
 } else {
     render();
 }
+
+
+//PI_faceplate(50);
+PI_logoPNG();
