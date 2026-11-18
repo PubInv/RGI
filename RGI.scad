@@ -26,9 +26,9 @@ include <BOSL2/joiners.scad>
 RENDER = 1;
 RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
-RENDER_FACE = 1;
+RENDER_FACE = 0;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 1;
+RENDER_FIRST = 0;
 RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
@@ -63,6 +63,8 @@ screw_head_height=1.3;
 anchor_height=depth_mm-wall_mm;
 anchor_ro=2;
 anchor_ri=0.8;
+LED_r = ((3/2)+.01)*GLOBAL_SCALE_DOWN;
+
 
 screw_r1_ns=screw_r1*GLOBAL_SCALE_DOWN; //top of head radius
 screw_r2_ns=screw_r2*GLOBAL_SCALE_DOWN; //bottom of head radius
@@ -780,12 +782,12 @@ module blank_face_plate(height_mm) {
                    }
 }
 
-module PI_logo() {
-    rotate([90,0,0])
-    linear_extrude(height = 0.5)
-    scale(logo_scale)
-        import("/Users/jamesdenney/Desktop/RGI/PI_logo.svg", center = true);
-}
+//module PI_logosvg() {
+//    rotate([90,180,0])
+//    linear_extrude(height = 0.5)
+//    scale(logo_scale)
+//        import("/Users/jamesdenney/Desktop/RGI/PI_logo.svg", center = true);
+//}
 
 module PI_logoPNG(height_mm) {
       
@@ -807,6 +809,47 @@ module PI_faceplate(height_mm) {
 
     }
 
+}
+module LED_cutout(){
+    translate([0,wall_mm/2+.1,0])
+    rotate([90,0,0])
+    cylinder(wall_mm+.2,LED_r,LED_r);
+    }
+
+module LED_faceplate(height_mm) {
+    LED_positions = [
+    [-12, -8],
+    [-6, 0],
+    [0, 8],
+    [6, 0],
+    [12, -8]
+];
+    union() {
+    difference() {
+    blank_face_plate(height_mm);
+        for (pos = LED_positions) {
+            translate([pos[0], 0, pos[1]])
+                LED_cutout();
+        
+            }
+    
+        }
+        
+        for (i = [0 : len(LED_positions)-1]) {
+
+        translate([
+            LED_positions[i][0] - LED_r*2,
+            -wall_mm,
+            LED_positions[i][1]
+        ])
+
+        rotate([90,0,0])
+        color("blue")
+        linear_extrude(height = 0.5)
+            text( str(i+1), size = LED_r*2, halign = "right", valign = "center"
+            );
+        }
+    }
 }
 
 module generic_component (height_mm) {
@@ -973,3 +1016,5 @@ if (USE_RENDER_KNIFE) {
 } else {
     render();
 }
+
+LED_faceplate(37);
