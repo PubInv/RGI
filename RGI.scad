@@ -26,9 +26,9 @@ include <BOSL2/joiners.scad>
 RENDER = 1;
 RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
-RENDER_FACE = 0;
+RENDER_FACE = 1;
 RENDER_FIT_TEST = 0;
-RENDER_FIRST = 0;
+RENDER_FIRST = 1;
 RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
@@ -75,10 +75,11 @@ anchor_ri_ns=anchor_ri*GLOBAL_SCALE_DOWN;
 
 faceplate_margin_mm=0.2;
 
-logo_scale = .5;
+logo_scale_svg = 0.5;
+logo_scale_x = 0.09;
+logo_scale_y = 0.09;
+logo_scale_z = 0.01;
 logo_height_mm = 0.5;
-logo_x = 0;
-logo_z = 0;
 
 // These concern chamfering
 cap_margin_mm = 4;
@@ -786,9 +787,13 @@ module PI_logo() {
         import("/Users/jamesdenney/Desktop/RGI/PI_logo.svg", center = true);
 }
 
-module PI_logoPNG() {
-        rotate([90,0,0])
-        scale([0.1,0.1,0.009])
+module PI_logoPNG(height_mm) {
+      
+    logo_scale_factor = min(height_mm / 55, 1);
+  
+    rotate([90,180,0])
+        scale([logo_scale_x*logo_scale_factor,logo_scale_y*logo_scale_factor,logo_scale_z])
+            color("green",.75)
             surface(file="/Users/jamesdenney/Desktop/RGI/PI_logo.png",center=true);
 }
 module PI_faceplate(height_mm) {
@@ -797,8 +802,8 @@ module PI_faceplate(height_mm) {
 
         blank_face_plate(height_mm);
 
-        translate([logo_x, -wall_mm/2, logo_z])
-            #PI_logoPNG();
+        translate([0, -wall_mm/2, 0])
+            PI_logoPNG(height_mm);
 
     }
 
@@ -952,7 +957,7 @@ module render() {
             if (RENDER_FACE){
                 translate([-buckle_case_length/2, depth_mm/2-wall_mm/2, z_translate])
                 rotate([180,0,0])
-                blank_face_plate(generic_component_default_height);
+                PI_faceplate(generic_component_default_height);
             }
         }
     }
@@ -968,7 +973,3 @@ if (USE_RENDER_KNIFE) {
 } else {
     render();
 }
-
-
-//PI_faceplate(50);
-PI_logoPNG();
