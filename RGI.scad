@@ -24,9 +24,11 @@ include <BOSL2/joiners.scad>
 // In proper position.
 
 RENDER = 1;
+EXAMPLE_EXPLODED = 1;
+EXAMPLE_ASSEMBLED = 0;
 RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
-RENDER_FACE = 1;
+RENDER_FACE = 0;
 RENDER_FIT_TEST = 0;
 RENDER_FIRST = 0;
 RENDER_SECOND = 0;
@@ -601,12 +603,12 @@ module generic_female_buckle(height_mm) {
         
    // Interior cavity + open negative-X wall
         translate([
-        -buckle_case_length/2,
+        -buckle_case_length/2-.1,
         -depth_mm/2 + wall_mm,
       0
         ])
         cube([
-        buckle_case_length - wall_mm,
+        buckle_case_length - wall_mm+.1,
         depth_mm - 2*wall_mm,
         height_mm - wall_mm
         ]);
@@ -802,7 +804,6 @@ module PI_logoPNG(height_mm) {
 module PI_faceplate(height_mm) {
 
     union() {
-
         blank_face_plate(height_mm);
 
         translate([0, -wall_mm/2+.01, 0])
@@ -877,9 +878,9 @@ module generic_component (height_mm) {
         cube([width_mm - 2*wall_mm, depth_mm - 2*       wall_mm, height_mm - 2*wall_mm]);
 
         // recess for male buckle
-         translate([width_mm/2-buckle_case_length,-depth_mm/2,0])
+         translate([width_mm/2-buckle_case_length,-depth_mm/2-1,-1])
         
-         cube([buckle_case_length+1,depth_mm+1,cap_height_mm]);
+         cube([buckle_case_length+.1,depth_mm+2,cap_height_mm+1]);
          
          //faceplate cutout
          translate([-buckle_case_length/2,depth_mm/2-wall_mm/2, height_mm/2+(dt_height)/2]) 
@@ -980,14 +981,13 @@ module render() {
             if (RENDER_BOTTOM) {
                     // Bottom cap
                 translate([30,0,0])
-                color("gray")
                 bottom_end_plate();
             }
 
             if (RENDER_FIRST) {
                 // First component
                 translate([0,0,0])
-                color("blue")
+                color("#138FAE")
                 generic_component(generic_component_default_height);
             }
 
@@ -1012,13 +1012,26 @@ module render() {
                 top_end_plate();
             }
             
-            z_translate = 
-            generic_component_default_height/2+(dt_height)/2;
             if (RENDER_FACE){
-                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2, z_translate])
+                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2, generic_component_default_height/2+(dt_height)/2])
                 rotate([180,0,0])
                 PI_faceplate(generic_component_default_height);
             }
+            
+            if (EXAMPLE_EXPLODED){
+                translate([40,0,0])
+                color("#97CDD8")
+                bottom_end_plate();
+                
+                translate([0,0,0])
+                color("#138FAE")
+                generic_component(generic_component_default_height);
+                
+//                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2+30, generic_component_default_height/2+(dt_height)/2])
+//                rotate([180,0,0])
+//                PI_faceplate(generic_component_default_height);
+                
+                }
         }
     }
 }
