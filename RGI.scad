@@ -25,7 +25,7 @@ include <BOSL2/joiners.scad>
 
 RENDER = 1;
 EXAMPLE_EXPLODED = 1;
-EXAMPLE_ASSEMBLED = 0;
+EXAMPLE_ASSEMBLED = 1;
 RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
 RENDER_FACE = 0;
@@ -798,12 +798,13 @@ module PI_logoPNG(height_mm) {
   
     rotate([90,180,0])
         scale([logo_scale_x*logo_scale_factor,logo_scale_y*logo_scale_factor,logo_scale_z])
-            color("green",.75)
+            color("#2E4828",.75)
             surface(file="/Users/jamesdenney/Desktop/RGI/PI_logo.png",center=true);
 }
 module PI_faceplate(height_mm) {
 
     union() {
+        color("#E4A706",.75)
         blank_face_plate(height_mm);
 
         translate([0, -wall_mm/2+.01, 0])
@@ -898,7 +899,7 @@ module generic_component (height_mm) {
         finger_indentation_knife();
     }
     
-    translate([(width_mm/2)-(prong_length)/2 +1,depth_mm/2-wall_mm,cap_height_mm-cap_fit_margin])
+    translate([(width_mm/2)-(prong_length)/2 +1,depth_mm/2-wall_mm,cap_height_mm])
         finger_indentation();
     
     translate([(width_mm/2)-(prong_length)/2 +1,-depth_mm/2+wall_mm,cap_height_mm])
@@ -1017,19 +1018,63 @@ module render() {
                 rotate([180,0,0])
                 PI_faceplate(generic_component_default_height);
             }
-            
+            // Exploded Preview
             if (EXAMPLE_EXPLODED){
-                translate([40,0,0])
-                color("#97CDD8")
-                bottom_end_plate();
+                translate([-width_mm*2+buckle_case_length,0,50+37])
+                color("#E4A706")
+                top_end_plate();
+                
+                translate([-width_mm,0,50])
+              color("#5D6F1C")
+              generic_component(37);
+                
+                translate([-buckle_case_length/2-width_mm, depth_mm/2-wall_mm/2+40, 50+37/2+(dt_height)/2])
+                rotate([180,180,0])
+                color("#A92404", .5)
+                LED_faceplate(37);
                 
                 translate([0,0,0])
+                color("#2E4828")
+                generic_component(generic_component_default_height);
+               
+                
+                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2+30, generic_component_default_height/2+(dt_height)/2])
+                rotate([180,0,0])
+                PI_faceplate(generic_component_default_height);
+                
+                translate([40,0,0])
+                color("#E4A706")
+                bottom_end_plate();
+                
+                }
+                
+                // Assembled Preview
+                if (EXAMPLE_ASSEMBLED){
+                translate([200,0,50+37])
+                color("#97CDD8")
+                top_end_plate();
+                
+                translate([200,0,50])
+              color("#FFC491")
+              generic_component(37);
+                    
+                translate([-buckle_case_length/2+200, depth_mm/2-wall_mm/2, 50+37/2+(dt_height)/2])
+                rotate([180,180,0])
+                color("#F7A093", .5)
+                LED_faceplate(37);
+                
+                translate([200,0,0])
                 color("#138FAE")
                 generic_component(generic_component_default_height);
+               
                 
-//                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2+30, generic_component_default_height/2+(dt_height)/2])
-//                rotate([180,0,0])
-//                PI_faceplate(generic_component_default_height);
+                translate([-buckle_case_length/2+200, depth_mm/2-wall_mm/2, generic_component_default_height/2+(dt_height)/2])
+                rotate([180,0,0])
+                PI_faceplate(generic_component_default_height);
+                
+                translate([200,0,0])
+                color("#97CDD8")
+                bottom_end_plate();
                 
                 }
         }
