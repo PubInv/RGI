@@ -24,7 +24,7 @@ include <BOSL2/joiners.scad>
 // In proper position.
 
 RENDER = 1;
-EXAMPLE_EXPLODED = 1;
+EXAMPLE_EXPLODED = 0;
 EXAMPLE_ASSEMBLED = 1;
 RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
@@ -789,7 +789,7 @@ module blank_face_plate(height_mm) {
 //    rotate([90,180,0])
 //    linear_extrude(height = 0.5)
 //    scale(logo_scale)
-//        import("/Users/jamesdenney/Desktop/RGI/PI_logo.svg", center = true);
+//        import("PI_logo.svg", center = true);
 //}
 
 module PI_logoPNG(height_mm) {
@@ -798,8 +798,8 @@ module PI_logoPNG(height_mm) {
   
     rotate([90,180,0])
         scale([logo_scale_x*logo_scale_factor,logo_scale_y*logo_scale_factor,logo_scale_z])
-            color("#2E4828",.75)
-            surface(file="/Users/jamesdenney/Desktop/RGI/PI_logo.png",center=true);
+            color("#388548",1)
+            surface(file="PI_logo.png",center=true);
 }
 module PI_faceplate(height_mm) {
 
@@ -1055,12 +1055,12 @@ module render() {
                 top_end_plate();
                 
                 translate([200,0,50])
-              color("#FFC491")
+              color("#F9E6D1")
               generic_component(37);
                     
                 translate([-buckle_case_length/2+200, depth_mm/2-wall_mm/2, 50+37/2+(dt_height)/2])
                 rotate([180,180,0])
-                color("#F7A093", .5)
+                color("#75C7D3", .5)
                 LED_faceplate(37);
                 
                 translate([200,0,0])
