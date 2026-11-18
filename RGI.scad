@@ -26,7 +26,7 @@ include <BOSL2/joiners.scad>
 RENDER = 1;
 RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
-RENDER_FACE = 0;
+RENDER_FACE = 1;
 RENDER_FIT_TEST = 0;
 RENDER_FIRST = 0;
 RENDER_SECOND = 0;
@@ -64,6 +64,7 @@ anchor_height=depth_mm-wall_mm;
 anchor_ro=2;
 anchor_ri=0.8;
 LED_r = ((3/2)+.01)*GLOBAL_SCALE_DOWN;
+LED_number=LED_r/GLOBAL_SCALE_DOWN;
 
 
 screw_r1_ns=screw_r1*GLOBAL_SCALE_DOWN; //top of head radius
@@ -804,7 +805,7 @@ module PI_faceplate(height_mm) {
 
         blank_face_plate(height_mm);
 
-        translate([0, -wall_mm/2, 0])
+        translate([0, -wall_mm/2+.01, 0])
             PI_logoPNG(height_mm);
 
     }
@@ -838,7 +839,7 @@ module LED_faceplate(height_mm) {
         for (i = [0 : len(LED_positions)-1]) {
 
         translate([
-            LED_positions[i][0] - LED_r*2,
+            LED_positions[i][0] - LED_number*2,
             -wall_mm,
             LED_positions[i][1]
         ])
@@ -846,7 +847,7 @@ module LED_faceplate(height_mm) {
         rotate([90,0,0])
         color("blue")
         linear_extrude(height = 0.5)
-            text( str(i+1), size = LED_r*2, halign = "right", valign = "center"
+            text( str(i+1), size = LED_number*2, halign = "right", valign = "center"
             );
         }
     }
@@ -950,6 +951,18 @@ module generic_component (height_mm) {
         
 }
 
+module generic_component_faceplate(height_mm){
+   
+    union(){
+        generic_component(height_mm);
+        translate([-buckle_case_length/2, depth_mm/2-wall_mm/2, height_mm/2+(dt_height)/2])
+                rotate([180,0,0])
+        color("yellow",0.5)
+        blank_face_plate(height_mm);
+        
+        }
+    }
+
 module render() {
     scale([1/GLOBAL_SCALE_DOWN,1/GLOBAL_SCALE_DOWN,1/GLOBAL_SCALE_DOWN])
     union() {
@@ -984,13 +997,17 @@ module render() {
               translate([0,0,50])
               color("green")
               generic_component(37);
+                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2, 50+37/2+(dt_height)/2])
+                rotate([180,180,0])
+                color("yellow", .5)
+                LED_faceplate(37);
             }
             
           
             
             if (RENDER_TOP) {
                 // Top cap
-                translate([-50,0,50+30])
+                translate([-50,0,50+37])
                 color("gray")
                 top_end_plate();
             }
@@ -1016,5 +1033,3 @@ if (USE_RENDER_KNIFE) {
 } else {
     render();
 }
-
-LED_faceplate(37);
