@@ -19,13 +19,10 @@ include <BOSL2/joiners.scad>
 //    along with this program.  If not, see 
 //    http://www.gnu.org/licenses/.
 
-// TODO: Create a flagged version 
-// that prints all modules (2 generic of different sizes) and top and bottom)
-// In proper position.
 
 RENDER = 1;
-EXAMPLE_EXPLODED = 1;
-EXAMPLE_ASSEMBLED = 1;
+EXAMPLE_EXPLODED = 1; // render exploded sample components
+EXAMPLE_ASSEMBLED = 1; // render example assebled components
 RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
 RENDER_FACE = 0;
@@ -35,8 +32,7 @@ RENDER_SECOND = 0;
 RENDER_MALE_BUCKLE=0;
 RENDER_FEMALE_BUCKLE=0;
 USE_RENDER_KNIFE = 0;
-V_PRONGS = 1;
-PRONG_THIN = 1;
+V_PRONGS = 1; // Theoretically, makes prongs more flexible
 // Use this to scale for small, test prints...
 GLOBAL_SCALE_DOWN = 1; // default = 1;
 
@@ -129,15 +125,8 @@ prong_length       = buckle_length - clip_length;
 prong_center_width = 6; // width of the center prong
 prong_center_tap   = prong_center_width/2;
 
-prong_side_width = (PRONG_THIN) ? 3 : 4;
+prong_side_width = 3;
 
-//if (PRONG_THIN) {
-//    prong_side_width   = 2;
-//    }
-//else {
-//    prong_side_width   = 4; // width of the side prongs;
-//}
-// prong_side_width   = 4; // width of the side prongs
 prong_offset       = 3; // difference between prong location and overall buckle width
 
 cap_height_mm = dt_height + cap_margin_mm + buckle_height + wall_mm;
@@ -746,7 +735,7 @@ module blank_face_plate(height_mm) {
     
     assert(height_mm >= 37, "ERROR: height_mm must be at least 37 ");
     
-    color(c = [100,100,0],0.5)
+    color([1.0,1.0,0,0.5])
     difference () {
         cube([width_mm-buckle_case_length-wall_mm*2-1-faceplate_margin_mm,wall_mm, height_mm - wall_mm*2-dt_height-faceplate_margin_mm],true);
         translate([(width_mm-buckle_case_length-wall_mm*2-1)/2-3*screw_r1_ns, -wall_mm/2,
