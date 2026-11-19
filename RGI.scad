@@ -61,6 +61,9 @@ screw_head_height=1.3;
 anchor_height=depth_mm-wall_mm;
 anchor_ro=2;
 anchor_ri=0.8;
+
+MIN_COMPONENT_HEIGHT = 37;
+
 LED_r = ((3/2)+.01)*GLOBAL_SCALE_DOWN;
 LED_number=LED_r/GLOBAL_SCALE_DOWN;
 
@@ -733,7 +736,7 @@ module m2_screw_anchor (){
 
 module blank_face_plate(height_mm) {
     
-    assert(height_mm >= 37, "ERROR: height_mm must be at least 37 ");
+    assert(height_mm >= MIN_COMPONENT_HEIGHT, str("ERROR: height_mm must be at least: ",MIN_COMPONENT_HEIGHT));
     
     color([1.0,1.0,0,0.5])
     difference () {
@@ -846,7 +849,7 @@ module LED_faceplate(height_mm) {
 
 module generic_component (height_mm) {
     
-    assert(height_mm >= 37, "ERROR: height_mm must be at least 37");
+    assert(height_mm >= MIN_COMPONENT_HEIGHT, str("ERROR: height_mm must be at least: ",MIN_COMPONENT_HEIGHT));    
   
     difference() {
 
@@ -986,11 +989,11 @@ module render() {
 
               translate([0,0,50])
               color("green")
-              generic_component(37);
-                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2, 50+37/2+(dt_height)/2])
+              generic_component(MIN_COMPONENT_HEIGHT);
+                translate([-buckle_case_length/2, depth_mm/2-wall_mm/2, generic_component_default_height+MIN_COMPONENT_HEIGHT/2+(dt_height)/2])
                 rotate([180,180,0])
                 color("yellow", .5)
-                LED_faceplate(37);
+                LED_faceplate(MIN_COMPONENT_HEIGHT);
             }
             
           
