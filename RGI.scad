@@ -24,8 +24,8 @@ include <BOSL2/joiners.scad>
 // In proper position.
 
 RENDER = 1;
-EXAMPLE_EXPLODED = 0;
-EXAMPLE_ASSEMBLED = 1;
+EXAMPLE_EXPLODED = 1;
+EXAMPLE_ASSEMBLED = 0;
 RENDER_BOTTOM = 0;
 RENDER_TOP = 0;
 RENDER_FACE = 0;
@@ -804,7 +804,7 @@ module PI_logoPNG(height_mm) {
 module PI_faceplate(height_mm) {
 
     union() {
-        color("#E4A706",.75)
+        color("#E3BC6D",.75)
         blank_face_plate(height_mm);
 
         translate([0, -wall_mm/2+.01, 0])
@@ -1030,7 +1030,7 @@ module render() {
                 
                 translate([-buckle_case_length/2-width_mm, depth_mm/2-wall_mm/2+40, 50+37/2+(dt_height)/2])
                 rotate([180,180,0])
-                color("#A92404", .5)
+                color("#33A7E4", .75)
                 LED_faceplate(37);
                 
                 translate([0,0,0])
