@@ -189,6 +189,7 @@ module cut_component_dovetail() {
 
 // Used under Creative-Commons BY-SA from You Magazine by "amcmichael"
 // https://youmagine.com/amcmichael
+// Modified slightly by jcd
 
 
 // ============================================================
@@ -388,13 +389,16 @@ module locking_mechanism(){
                         circle(d = 6);
     }
 }
+// END INCLUDED CODE
 
 // ---------------------------------------------------------
-// Chamfered exterior corners
+// Chamfered exterior corners - jcd
 //
 // Chamfers the 4 vertical outside corners only.
 // Top and bottom faces remain square for mating.
 // ---------------------------------------------------------
+
+// Ask AI if this can be rewritten using BOSL
 module vertical_corner_chamfer(
 size_x,
     size_y,
@@ -415,7 +419,7 @@ size_x,
                 );
 }
 
-
+// TODO: look for a more convenient "chamfer" function from BOSL
 module horizontal_top_chamfer(
     size_x,
     size_y,
@@ -548,14 +552,16 @@ module horizontal_bottom_chamfer(
     }
 }
 
+
+// TODO: Rewrite with fewer magic numbers
 module finger_indentation_knife() {
+// scaled to make an oval/ellipse instead of pure circle
     scale([7.5, 4, 11.5])
         linear_extrude(height = .66)
             circle(r = 1, $fn = 100);
 }
 
-module finger_indentation() {
-    
+module finger_indentation() { 
     difference() {
         scale([7.5, 4, 11.5])
         linear_extrude(height = .6)
@@ -605,23 +611,26 @@ module generic_female_buckle(height_mm) {
         height_mm - wall_mm
         ]);
         
-    // TODO: Remove these "magic numbers"
-    translate([3.75,depth_mm/2,11])
-    scale([7.5, 4,11.5]) 
-    linear_extrude(height =2)
-    circle(r = 1, $fn = 100);
-    translate([3.75,-depth_mm/2,11])
-    scale([7.5, 4,11.5]) 
-    linear_extrude(height =2)
-    circle(r = 1, $fn = 100); 
+        // TODO: Remove these "magic numbers"
+        Z_TRANSLATE = 4; // this is to give more space for the fingers
+        translate([3.75,depth_mm/2,Z_TRANSLATE])
+        scale([7.5, 4,11.5]) 
+        linear_extrude(height =2)
+        circle(r = 1, $fn = 100);
+        translate([3.75,-depth_mm/2,Z_TRANSLATE])
+        scale([7.5, 4,11.5]) 
+        linear_extrude(height =2)
+        circle(r = 1, $fn = 100); 
     //
-    translate([3.75,depth_mm/2,5])
-    finger_indentation_knife();
-    
-    translate([3.75,-depth_mm/2,5])
-    finger_indentation_knife();
+//        translate([3.75,depth_mm/2,5])
+//        finger_indentation_knife();
+//        
+//        translate([3.75,-depth_mm/2,5])
+//        finger_indentation_knife();
     }
     
+    // These two adds back material to seal up the finger 
+    // indentation when the component is buckled.
     translate([3.75,depth_mm/2-wall_mm,4])
     finger_indentation();
     
@@ -909,7 +918,7 @@ module generic_component (height_mm) {
     rotate([90,0,90])
     difference() {
         cut_component_dovetail();
-        cube([slit_width,50,height-slit_margin*2],center = true);
+        cube([slit_width,depth_mm,height-slit_margin*2],center = true);
     }
     difference() {
     //Female Buckle
@@ -923,23 +932,33 @@ module generic_component (height_mm) {
         dt_height + cap_margin_mm-1])
     
     if (V_PRONGS) {
-    v_male_buckle();
-} else {
-    male_buckle();
-        }
+        v_male_buckle();
+    } else {
+        male_buckle();
+    }
         
-        // screw anchor
-    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+3*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height)/2+(height_mm - wall_mm*2-dt_height)/2-2*screw_r1_ns])
+    // screw anchor
+    
+    // TODO: Explain these variable
+    x = (width_mm-buckle_case_length-wall_mm*2-1)/2;
+    xb = buckle_case_length/2;
+    xd = 3*screw_r1_ns;
+    zb = height_mm/2+(dt_height)/2;
+    zd = 2*screw_r1_ns;
+    z = (height_mm - wall_mm*2-dt_height)/2;
+    y = depth_mm/2-wall_mm;
+    
+    translate([-xb-x+xd, y, zb+z-zd])
     m2_screw_anchor();
         
-    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-3*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height)/2+(height_mm - wall_mm*2-dt_height)/2-2*screw_r1_ns])
+    translate([-xb+x-xd, y, zb+z-zd])
     m2_screw_anchor();
         
-    translate([-buckle_case_length/2+(width_mm-buckle_case_length-wall_mm*2-1)/2-3*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height)/2-(height_mm - wall_mm*2-dt_height)/2+2*screw_r1_ns])
+    translate([-xb+x-xd, y, zb-z+zd])
     rotate([0,90,0])
     m2_screw_anchor();
     
-    translate([-buckle_case_length/2-(width_mm-buckle_case_length-wall_mm*2-1)/2+3*screw_r1_ns,depth_mm/2-wall_mm, height_mm/2+(dt_height)/2-(height_mm - wall_mm*2-dt_height)/2+2*screw_r1_ns])
+    translate([-xb-x+xd, y, zb-z+zd])
     rotate([0,-90,0])
     m2_screw_anchor();
         
@@ -967,7 +986,7 @@ module render() {
             
             if (RENDER_FEMALE_BUCKLE)
                 rotate([0,0,180])
-                translate([-275,-38,0])
+                translate([-275,-38,0]) // space out for looks
                 female_buckle();
            
 
@@ -1000,7 +1019,7 @@ module render() {
             
             if (RENDER_TOP) {
                 // Top cap
-                translate([-50,0,50+37])
+                translate([-50,0,generic_component_default_height+MIN_COMPONENT_HEIGHT])
                 color("gray")
                 top_end_plate();
             }
@@ -1012,18 +1031,18 @@ module render() {
             }
             // Exploded Preview
             if (EXAMPLE_EXPLODED){
-                translate([-width_mm*2+buckle_case_length,0,50+37])
+                translate([-width_mm*2+buckle_case_length,0,generic_component_default_height+MIN_COMPONENT_HEIGHT])
                 color("#E4A706")
                 top_end_plate();
                 
                 translate([-width_mm,0,50])
               color("#5D6F1C")
-              generic_component(37);
+              generic_component(MIN_COMPONENT_HEIGHT);
                 
-                translate([-buckle_case_length/2-width_mm, depth_mm/2-wall_mm/2+40, 50+37/2+(dt_height)/2])
+                translate([-buckle_case_length/2-width_mm, depth_mm/2-wall_mm/2+40, generic_component_default_height+MIN_COMPONENT_HEIGHT/2+(dt_height)/2])
                 rotate([180,180,0])
                 color("#33A7E4", .75)
-                LED_faceplate(37);
+                LED_faceplate(MIN_COMPONENT_HEIGHT);
                 
                 translate([0,0,0])
                 color("#2E4828")
@@ -1042,18 +1061,18 @@ module render() {
                 
                 // Assembled Preview
                 if (EXAMPLE_ASSEMBLED){
-                translate([200,0,50+37])
+                translate([200,0,generic_component_default_height+MIN_COMPONENT_HEIGHT])
                 color("#97CDD8")
                 top_end_plate();
                 
                 translate([200,0,50])
               color("#F9E6D1")
-              generic_component(37);
+              generic_component(MIN_COMPONENT_HEIGHT);
                     
-                translate([-buckle_case_length/2+200, depth_mm/2-wall_mm/2, 50+37/2+(dt_height)/2])
+                translate([-buckle_case_length/2+200, depth_mm/2-wall_mm/2, generic_component_default_height+MIN_COMPONENT_HEIGHT/2+(dt_height)/2])
                 rotate([180,180,0])
                 color("#75C7D3", .5)
-                LED_faceplate(37);
+                LED_faceplate(MIN_COMPONENT_HEIGHT);
                 
                 translate([200,0,0])
                 color("#138FAE")
