@@ -53,7 +53,7 @@ We need electrical engineers and mechanical engineers to make precise how the in
 
 # Photos of Prototype
 
-Here are photos of a prototype 3D printed at small scale for testing
+Here are photos of a prototype 3D printed at small scale for testing. This prototype uses a buckle to lock together rather than the long bolts.
 
 
 <img src="RGI_photos/IMG_3696.jpeg" width="500">
@@ -65,3 +65,18 @@ Here are photos of a prototype 3D printed at small scale for testing
 <img src="RGI_photos/IMG_3699.jpeg" width="500">
 
 <img src="RGI_photos/IMG_3700.jpeg" width="500">
+
+# New prototype with removable faceplate.
+
+This prototype added a cutout and faceplate to allow electronics to be installed inside.
+<img width="4284" height="5712" alt="IMG_3797" src="https://github.com/user-attachments/assets/41c64022-71b6-4ceb-9afd-4c84d34a6c10" />
+
+<img width="4284" height="5712" alt="IMG_3796" src="https://github.com/user-attachments/assets/9e095382-887b-48f4-aa31-42fc13803e4b" />
+
+<img width="4284" height="5712" alt="IMG_3795" src="https://github.com/user-attachments/assets/4a3fc892-d7c0-403c-ac40-f6c2d7e42465" />
+
+<img width="4284" height="5712" alt="IMG_3794" src="https://github.com/user-attachments/assets/7e827f18-c422-48fc-b5d3-a955857ba426" />
+
+<img width="4284" height="5712" alt="IMG_3791" src="https://github.com/user-attachments/assets/02306d84-428e-403c-ba13-313876e3d0c1" />
+ 
+
